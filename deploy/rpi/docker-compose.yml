@@ -1,0 +1,47 @@
+version: '3'
+services:
+  web:
+    privileged: true
+    image: rpi-lts-ctrl-service:latest
+    expose:
+      - 5000
+    ports:
+      - 80:5000
+    env_file:
+      - ./docker-rpi.env
+    depends_on:
+      - postgres
+      # - db-data-seed
+    devices:
+      - /dev/gpiomem
+    networks:
+      - rpi-lts-ctrl-net
+    stdin_open: true
+    tty: true
+  monitor:
+    image: rpi-lts-ctrl-monitor:latest
+    env_file:
+      - ./docker-rpi.env
+    networks:
+      - rpi-lts-ctrl-net
+  postgres:
+    image: postgres:12-alpine
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    networks:
+      - rpi-lts-ctrl-net
+    env_file:
+      - ./docker-rpi.env
+  # db-data-seed:
+  #   image: rpi-lts-ctrl-db-seed:latest
+  #   depends_on:
+  #     - postgres
+  #   env_file:
+  #     - ./docker-rpi.env
+  #   networks:
+  #     - rpi-lts-ctrl-net
+networks:
+  rpi-lts-ctrl-net:
+      
