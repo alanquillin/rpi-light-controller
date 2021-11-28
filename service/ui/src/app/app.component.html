@@ -20,12 +20,12 @@
           </mat-button-toggle-group>          
           
         <div *ngIf="selectedZone.program === 'timer'">
-            Description: {{selectedZone.description}}
-            Program: {{selectedZone.program}}
-            State: {{selectedZone.state}}
-            On: {{selectedZone.on}}
-            Off: {{selectedZone.off}}
-            Pin: {{selectedZone.pin_num}}
+            Description: {{selectedZone.description}}<br/>
+            Program: {{selectedZone.program}}<br/>
+            State: {{selectedZone.state}}<br/>
+            On: {{selectedZone.on}}<br/>
+            Off: {{selectedZone.off}}<br/>
+            Pin: {{selectedZone.pinNum}}<br/>
         </div>
         <div *ngIf="selectedZone.program === 'manual'">
             <section class="example-section">
