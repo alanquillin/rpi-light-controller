@@ -1,4 +1,4 @@
-FROM rpi-lts-ctrl-service as python-build
+FROM rpi-lts-ctrl-service:dev
 
 USER 0
 

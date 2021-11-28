@@ -46,20 +46,12 @@ ENV PYTHONUNBUFFERED=1
 ENV CONFIG_BASE_DIR=/rpi-lights-controller/config
 ENV RUN_ENV=${build_for}
 
-RUN addgroup app --gid 10000 && \
-    useradd --gid app \
-            --shell /sbin/nologin \
-            --no-create-home \
-            --uid 10000 app
-
 COPY --from=node-build /ui/dist/rpi-lts-ctrl /rpi-lights-controller/api/static/
 
 COPY api /rpi-lights-controller/api
 COPY entrypoint.sh /rpi-lights-controller/api
 
 WORKDIR /rpi-lights-controller/api
-
-USER 10000
 
 EXPOSE 5000
 

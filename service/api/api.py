@@ -13,13 +13,10 @@ if __name__ == "__main__":
 import argparse
 import json as official_json
 import uuid
-from datetime import timedelta
-from urllib.parse import urljoin
 import os
 
 from flask import Flask, make_response, send_from_directory
 from flask.logging import create_logger
-from flask_cors import CORS
 from flask_restful import Api
 from gevent.pywsgi import LoggingLogAdapter, WSGIServer  # pylint:disable=ungrouped-imports
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -68,7 +65,6 @@ official_json.dumps = json.dumps
 
 
 app_config = Config()
-# app_config.setup(config_files=["default.json"])
 app_config.setup()
 
 
@@ -77,13 +73,10 @@ def health():
     return "healthy 👍"
 
 
-# API resources for UI:
+# API resources:
 api.add_resource(Zones, "/zones")
 api.add_resource(Zone, "/zones/<zone_id>")
 api.add_resource(ZoneState, "/zones/<zone_id>/<state>")
-
-# UI resources
-#api.add_resource(AWSOrder, "/aws/order")
 
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.secret_key = os.environ.get("APP_SECRET_KEY", str(uuid.uuid4()))
@@ -134,20 +127,7 @@ if __name__ == "__main__":
 
     if app.config.get("ENV") == "development":
         logger.debug("Setting up development environment")
-        CORS(app)
-    else:
-        CORS(
-            app,
-            resources={
-                "/user": {
-                    "origins": app_config.get("api.registration_allow_origins"),
-                    "methods": ["PUT", "OPTIONS"],
-                }
-            },
-            expose_headers=["Content-Type"],
-            max_age=3000,
-            vary_header=True,
-        )
+
 
     http_server = WSGIServer(("", port), app, log=IgnoringLogAdapter(app.logger, log_level))
     logger.debug("app.config: %s", app.config)

@@ -7,6 +7,8 @@ import logging
 
 import requests
 
+ENV_PREFIX = ''
+
 def get_env(var, default=None, con_fn=None):
     val = os.environ.get(ENV_PREFIX + var, default)
     if con_fn:
@@ -27,7 +29,6 @@ logging.basicConfig(level=log_level, format=LOG_FMT)
 
 LOG = logging.getLogger("monitor")
 
-ENV_PREFIX = ''
 DB_DATE_FORMAT = '%H:%M:%S'
 SYSTEM_PROGRAM_TIMER = 'timer'
 
@@ -39,10 +40,6 @@ use_ssl = False
 ssl_key = ''
 ssl_cert = ''
 ssl_ca = ''
-
-
-
-
 
 def shutdown(*args, **kwargs):
     sys.exit(0)
@@ -155,13 +152,15 @@ if __name__ == '__main__':
 
             for zone in zones:
                 if zone['program'] != SYSTEM_PROGRAM_TIMER:
-                    LOG.info("Zone %s has program set to %s, skipping", zone["id"], zone["program"])
+                    LOG.debug("Zone %s has program set to %s, skipping", zone["id"], zone["program"])
                     continue
                 
                 zone_num = zone['id']
                 now = time.localtime()
                 start = get_time(zone['on'])
                 end = get_time(zone['off'])
+
+                LOG.debug('Zone %s - on: %s, off: %s, now: %s', zone_num, time.strftime(DB_DATE_FORMAT, start), time.strftime(DB_DATE_FORMAT, end), time.strftime(DB_DATE_FORMAT, now))
 
                 if start < now < end:
                     LOG.debug('Turning lights for zone %s on' % zone_num)

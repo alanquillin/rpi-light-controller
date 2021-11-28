@@ -24,8 +24,13 @@ DOCKER_IMAGE_SERVICE ?= $(DOCKER_IMAGE_BASE)-service
 DOCKER_IMAGE_MONITOR ?= $(DOCKER_IMAGE_BASE)-monitor
 DOCKER_DB_SEED_IMAGE ?= $(DOCKER_IMAGE_BASE)-db-seed
 DOCKER_IMAGE_TAG ?= latest
+DOCKER_SOURCE_IMAGE_TAG ?= latest
 DOCKER := docker
 DOCKER_BUILD := $(DOCKER) build $(DOCKER_BUILD_ARGS)
+IMAGE_REPOSITORY := alanquillin
+REPOSITORY_IMAGE_BASE ?= rpi-lights-controller
+REPOSITORY_IMAGE_SERVICE ?= $(REPOSITORY_IMAGE_BASE)-service
+REPOSITORY_IMAGE_MONITOR ?= $(REPOSITORY_IMAGE_BASE)-monitor
 
 include .env
 export $(shell sed 's/=.*//' .env)
@@ -36,6 +41,8 @@ export $(shell sed 's/=.*//' .env)
 		build-db-seed rebuild-db-seed
 		
 
+# dependency targets
+
 depends: 
 	pushd ./service && $(POETRY_VARS) $(POETRY) install --no-dev --no-root && popd
 
@@ -45,14 +52,19 @@ test-depends:
 update-depends:
 	pushd ./service && $(POETRY_VARS) $(POETRY) update && popd
 
+# Targets for building containers
 
-build: build-service build-monitor build-db-seed
+# prod
+
+build: build-service build-monitor
 
 build-service:
 	$(DOCKER_BUILD) -t $(DOCKER_IMAGE_SERVICE):$(DOCKER_IMAGE_TAG) service
 
 build-monitor:
 	$(DOCKER_BUILD) -t $(DOCKER_IMAGE_MONITOR):$(DOCKER_IMAGE_TAG) monitor
+
+# dev
 
 build-dev: build-service-dev build-monitor-dev build-db-seed
 
@@ -63,16 +75,27 @@ build-monitor-dev:
 	$(DOCKER_BUILD) --build-arg build_for=dev -t $(DOCKER_IMAGE_MONITOR):dev monitor
 
 build-db-seed:
-	$(DOCKER_BUILD) -t $(DOCKER_DB_SEED_IMAGE):$(DOCKER_IMAGE_TAG) db-seed
+	$(DOCKER_BUILD) -t $(DOCKER_DB_SEED_IMAGE):dev db-seed
 
-rebuild-db-seed:
-	$(DOCKER_BUILD) -t $(DOCKER_DB_SEED_IMAGE):$(DOCKER_IMAGE_TAG) --no-cache db-seed
+# Targets for publishing containers
 
-#test: update-git-depends ci
+tag-service: build-service
+	$(DOCKER) tag $(DOCKER_IMAGE_SERVICE):$(DOCKER_SOURCE_IMAGE_TAG) $(IMAGE_REPOSITORY)/$(REPOSITORY_IMAGE_SERVICE):$(DOCKER_IMAGE_TAG)
 
-# test-py:
-# 	CONFIG_PATH=pytest.json CONFIG_BASE_DIR=$(CONFIG_BASE_DIR) \
-# 	$(PYTEST) ${PYTEST_ARGS} ${TESTS}
+tag-monitor: build-monitor
+	$(DOCKER) tag $(DOCKER_IMAGE_MONITOR):$(DOCKER_SOURCE_IMAGE_TAG) $(IMAGE_REPOSITORY)/$(REPOSITORY_IMAGE_MONITOR):$(DOCKER_IMAGE_TAG)
+
+tag: tag-service tag-monitor
+
+publish-service: tag-service
+	$(DOCKER) push $(IMAGE_REPOSITORY)/$(REPOSITORY_IMAGE_SERVICE):$(DOCKER_IMAGE_TAG)
+
+publish-monitor: tag-monitor
+	$(DOCKER) push $(IMAGE_REPOSITORY)/$(REPOSITORY_IMAGE_MONITOR):$(DOCKER_IMAGE_TAG)
+
+publish: publish-service publish-monitor
+
+# Testing and Syntax targets
 
 test-sec:
 	$(BANDIT) -r service/api --exclude test
@@ -89,14 +112,19 @@ format-py:
 	$(ISORT) service/api tests deploy
 	$(BLACK) service/api tests deploy
 
+# Targets for running the app
+
 run-rpi:
+	docker-compose --project-directory deploy/rpi pull && \
 	docker-compose --project-directory deploy/rpi up
 
-run-dev: build-dev build-db-seed
+run-dev: build-dev
 	docker-compose --project-directory deploy/local-dev up
 
 run-db-migrations:
 	./migrate.sh upgrade head
+
+# Clean up targets
 
 clean:
 	docker-compose --project-directory deploy/local-dev down --volumes
