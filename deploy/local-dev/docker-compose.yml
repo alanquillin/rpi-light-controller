@@ -17,6 +17,8 @@ services:
       - rpi-lts-ctrl-net
     stdin_open: true
     tty: true
+    volumes:
+      - /etc/localtime:/etc/localtime
   monitor:
     image: rpi-lts-ctrl-monitor:dev
     depends_on:
@@ -25,6 +27,8 @@ services:
       - ./docker-local.env
     networks:
       - rpi-lts-ctrl-net
+    volumes:
+      - /etc/localtime:/etc/localtime
   postgres:
     image: postgres:12-alpine
     expose:
