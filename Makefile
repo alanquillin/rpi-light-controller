@@ -57,10 +57,10 @@ build-monitor:
 build-dev: build-service-dev build-monitor-dev build-db-seed
 
 build-service-dev:
-	$(DOCKER_BUILD) --build-arg build_for=dev -t $(DOCKER_IMAGE_SERVICE):$(DOCKER_IMAGE_TAG) service
+	$(DOCKER_BUILD) --build-arg build_for=dev -t $(DOCKER_IMAGE_SERVICE):dev service
 
 build-monitor-dev:
-	$(DOCKER_BUILD) --build-arg build_for=dev -t $(DOCKER_IMAGE_MONITOR):$(DOCKER_IMAGE_TAG) monitor
+	$(DOCKER_BUILD) --build-arg build_for=dev -t $(DOCKER_IMAGE_MONITOR):dev monitor
 
 build-db-seed:
 	$(DOCKER_BUILD) -t $(DOCKER_DB_SEED_IMAGE):$(DOCKER_IMAGE_TAG) db-seed
