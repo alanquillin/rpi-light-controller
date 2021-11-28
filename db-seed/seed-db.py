@@ -21,7 +21,7 @@ ZONES = [
         "id": 1,
         "description": "Zone 1",
         "program": "timer",
-        "state": "",
+        "state": "off",
         "pin_num": 1,
         "on": "17:00:00",
         "off": "23:59:59"
