@@ -10,7 +10,7 @@ COPY ui/src /ui/src
 
 # Python base
 # ############################################################
-FROM python:3.8-buster as python-base
+FROM arm32v7/python:3.8-buster as python-base
 
 RUN pip install -U pip 
 RUN pip install setuptools wheel

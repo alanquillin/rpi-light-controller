@@ -1,6 +1,6 @@
 # Python base
 # ############################################################
-FROM python:3.8-slim-bullseye
+FROM arm32v7/python:3.8-buster as python-base
 
 COPY ./requirements.txt .
 
