@@ -8,7 +8,7 @@ export class Zone {
   description: string | undefined;
   program: string | undefined;
   state: string | undefined;
-  pin_num: number | undefined;
+  pinNum: number | undefined;
   on: string | undefined;
   off: string | undefined;
 }
