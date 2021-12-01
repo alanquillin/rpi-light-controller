@@ -15,7 +15,7 @@ class Zones(Base, DictifiableMixin, QueryMethodsMixin):
 
     __tablename__ = _TABLE_NAME
 
-    id = Column(_PKEY, Integer, primary_key=True)
+    id = Column(_PKEY, Integer, primary_key=True, autoincrement=True)
     description = Column(String, nullable=False)
     program = Column(String, nullable=False)
     state = Column(String, nullable=False)
