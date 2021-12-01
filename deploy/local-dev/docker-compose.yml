@@ -40,7 +40,7 @@ services:
     env_file:
       - ./docker-local.env
   db-data-seed:
-    image: rpi-lts-ctrl-db-seed:latest
+    image: rpi-lts-ctrl-db-seed:dev
     depends_on:
       - postgres
     env_file:

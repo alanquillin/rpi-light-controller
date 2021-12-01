@@ -1,6 +1,6 @@
 # NodeJS base
 # ############################################################
-FROM node:16-buster as node-base
+FROM node:16-buster-slim as node-base
 
 RUN yarn global add @angular/cli
 COPY ui/angular.json ui/tsconfig.app.json ui/tsconfig.json ui/package.json /ui/
@@ -10,7 +10,11 @@ COPY ui/src /ui/src
 
 # Python base
 # ############################################################
-FROM arm32v7/python:3.8-buster as python-base
+FROM python:3.8-slim-buster as python-base
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gcc build-essential libpq-dev libffi-dev libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN pip install -U pip 
 RUN pip install setuptools wheel
@@ -18,15 +22,12 @@ ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
 RUN pip install "cryptography<3.5"
 RUN pip install "poetry>=1.1.11"
 
-# Python dependencies
-# ############################################################
-FROM python-base as python-dep
-
 RUN poetry config virtualenvs.in-project true
 COPY pyproject.toml poetry.lock ./
 RUN poetry install --no-interaction --no-ansi --no-dev --no-root
-RUN poetry run pip install psycopg2-binary
-RUN poetry run pip install rpi.gpio
+RUN poetry run pip install psycopg2-binary rpi.gpio
+
+RUN apt-get purge -y --auto-remove gcc build-essential libffi-dev libssl-dev
 
 # Angular build
 # ############################################################
@@ -37,7 +38,7 @@ RUN yarn run build:${build_for}
 
 # Final build
 # ############################################################
-FROM python-dep as final
+FROM python-base as final
 
 ARG build_for=prod
 

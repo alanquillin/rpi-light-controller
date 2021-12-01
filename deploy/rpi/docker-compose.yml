@@ -8,7 +8,7 @@ services:
     ports:
       - 80:5000
     env_file:
-      - ./docker-rpi.env
+      - ./docker.env
     depends_on:
       - postgres
       # - db-data-seed
@@ -24,7 +24,7 @@ services:
   monitor:
     image: alanquillin/rpi-lights-controller-monitor:latest
     env_file:
-      - ./docker-rpi.env
+      - ./docker.env
     networks:
       - rpi-lts-ctrl-net
     volumes:
@@ -38,15 +38,7 @@ services:
     networks:
       - rpi-lts-ctrl-net
     env_file:
-      - ./docker-rpi.env
-  # db-data-seed:
-  #   image: rpi-lts-ctrl-db-seed:latest
-  #   depends_on:
-  #     - postgres
-  #   env_file:
-  #     - ./docker-rpi.env
-  #   networks:
-  #     - rpi-lts-ctrl-net
+      - ./docker.env
 networks:
   rpi-lts-ctrl-net:
       

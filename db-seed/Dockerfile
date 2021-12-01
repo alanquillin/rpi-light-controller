@@ -1,7 +1,5 @@
 FROM rpi-lts-ctrl-service:dev
 
-USER 0
-
 COPY requirements.txt .
 
 RUN pip install -U pip setuptools wheel && \

@@ -24,6 +24,7 @@ DOCKER_IMAGE_SERVICE ?= $(DOCKER_IMAGE_BASE)-service
 DOCKER_IMAGE_MONITOR ?= $(DOCKER_IMAGE_BASE)-monitor
 DOCKER_DB_SEED_IMAGE ?= $(DOCKER_IMAGE_BASE)-db-seed
 DOCKER_IMAGE_TAG ?= latest
+DOCKER_IMAGE_TAG_DEV ?= dev
 DOCKER_SOURCE_IMAGE_TAG ?= latest
 DOCKER := docker
 DOCKER_BUILD := $(DOCKER) build $(DOCKER_BUILD_ARGS)
@@ -31,10 +32,6 @@ IMAGE_REPOSITORY := alanquillin
 REPOSITORY_IMAGE_BASE ?= rpi-lights-controller
 REPOSITORY_IMAGE_SERVICE ?= $(REPOSITORY_IMAGE_BASE)-service
 REPOSITORY_IMAGE_MONITOR ?= $(REPOSITORY_IMAGE_BASE)-monitor
-
-include .env
-export $(shell sed 's/=.*//' .env)
-
 
 .PHONY: build build-dev docker-build format-py test run-rpi run-dev clean \
 		test-sec lint-py lint-ts depends test-depends update-depends \
@@ -59,23 +56,23 @@ update-depends:
 build: build-service build-monitor
 
 build-service:
-	$(DOCKER_BUILD) -t $(DOCKER_IMAGE_SERVICE):$(DOCKER_IMAGE_TAG) service
+	$(DOCKER_BUILD) --platform=linux/arm -t $(DOCKER_IMAGE_SERVICE):$(DOCKER_IMAGE_TAG) service
 
 build-monitor:
-	$(DOCKER_BUILD) -t $(DOCKER_IMAGE_MONITOR):$(DOCKER_IMAGE_TAG) monitor
+	$(DOCKER_BUILD) --platform=linux/arm -t $(DOCKER_IMAGE_MONITOR):$(DOCKER_IMAGE_TAG) monitor
 
 # dev
 
 build-dev: build-service-dev build-monitor-dev build-db-seed
 
 build-service-dev:
-	$(DOCKER_BUILD) --build-arg build_for=dev -t $(DOCKER_IMAGE_SERVICE):dev service
+	$(DOCKER_BUILD) --build-arg build_for=dev -t $(DOCKER_IMAGE_SERVICE):$(DOCKER_IMAGE_TAG_DEV) service
 
 build-monitor-dev:
-	$(DOCKER_BUILD) --build-arg build_for=dev -t $(DOCKER_IMAGE_MONITOR):dev monitor
+	$(DOCKER_BUILD) --build-arg build_for=dev -t $(DOCKER_IMAGE_MONITOR):$(DOCKER_IMAGE_TAG_DEV) monitor
 
-build-db-seed:
-	$(DOCKER_BUILD) -t $(DOCKER_DB_SEED_IMAGE):dev db-seed
+build-db-seed: build-service-dev
+	$(DOCKER_BUILD) -t $(DOCKER_DB_SEED_IMAGE):$(DOCKER_IMAGE_TAG_DEV) db-seed
 
 # Targets for publishing containers
 
