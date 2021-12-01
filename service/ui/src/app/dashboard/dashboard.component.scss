@@ -31,12 +31,18 @@ button.zone-picker {
     padding: 1em 0;
 }
 
-.mat-button-toggle-label-content {
-    padding: 2px 8px;
-    line-height: inherit;
-}
-
 .program-details {
     display: block;
     padding: 1em 0;
+}
+
+// material overrides
+
+.mat-button-toggle-label-content {
+    padding: 2px 8px !important;
+    line-height: inherit !important;
+}
+
+.mat-simple-snackbar-action {
+    color: red !important;
 }

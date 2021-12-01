@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import {
   Zone,
@@ -32,41 +33,51 @@ export class DataService {
     this.baseUrl = '';
   }
 
+  getError(error: any) {
+    let message = '';
+    if (error.error instanceof ErrorEvent) {
+        // handle client-side errors
+        message = `Error: ${error.error.message}`;
+    } else {
+        // handle server-side errors
+        message = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+    console.log(message);
+    return throwError(message);
+  }
+
   getZones(): Observable<Zone[]> {
     const url = `${this.baseUrl}/zones`;
-    return this.http.get<Zone[]>(url, {});
+    return this.http.get<Zone[]>(url).pipe(catchError(this.getError));
   }
 
   getZone(zoneId: number): Observable<Zone> {
     const url = `${this.baseUrl}/zones/${zoneId}`;
-    return this.http.get<Zone>(url, {});
+    return this.http.get<Zone>(url).pipe(catchError(this.getError));
   }
 
   deleteZone(zoneId: number): Observable<any> {
     const url = `${this.baseUrl}/zones/${zoneId}`;
-    return this.http.delete<any>(url, {});
+    return this.http.delete<any>(url).pipe(catchError(this.getError));
   }
 
-  turnZoneOn(zoneId: number): Observable<any> {
+  turnZoneOn(zoneId: number): Observable<Zone> {
     const url = `${this.baseUrl}/zones/${zoneId}/on`;
-    const result = this.http.post<any>(url, {});
-    return result;
+    return this.http.post<Zone>(url, {}).pipe(catchError(this.getError));
   }
 
-  turnZoneOff(zoneId: number): Observable<any> {
+  turnZoneOff(zoneId: number): Observable<Zone> {
     const url = `${this.baseUrl}/zones/${zoneId}/off`;
-    const result = this.http.post<any>(url, {});
-    return result;
+    return this.http.post<Zone>(url, {}).pipe(catchError(this.getError));
   }
 
-  updateZone(zoneId: number, data: any): Observable<any> {
+  updateZone(zoneId: number, data: any): Observable<Zone> {
     const url = `${this.baseUrl}/zones/${zoneId}`;
-    const result = this.http.patch<any>(url, data);
-    return result;
+    return this.http.patch<Zone>(url, data).pipe(catchError(this.getError));
   }
 
-  addZone(zone: Zone): Observable<any> {
+  addZone(zone: Zone): Observable<Zone> {
     const url = `${this.baseUrl}/zones`;
-    return this.http.post<any>(url, zone, {});
+    return this.http.post<Zone>(url, zone).pipe(catchError(this.getError));
   }
 }

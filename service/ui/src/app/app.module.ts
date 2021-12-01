@@ -19,6 +19,7 @@ import { MatIconModule} from '@angular/material/icon';
 import { MatMenuModule} from '@angular/material/menu';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { MatFormFieldModule } from "@angular/material/form-field";
     ReactiveFormsModule,
     MatInputModule,
     MatFormFieldModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    MatSnackBarModule
   ],
   providers: [HttpClient],
   bootstrap: [AppComponent]
