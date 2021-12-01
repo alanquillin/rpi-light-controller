@@ -161,8 +161,14 @@ if __name__ == '__main__':
                 end = get_time(zone['off'])
 
                 LOG.debug('Zone %s - on: %s, off: %s, now: %s', zone_num, time.strftime(DB_DATE_FORMAT, start), time.strftime(DB_DATE_FORMAT, end), time.strftime(DB_DATE_FORMAT, now))
+                
+                turn_on = start < now < end
+                if start > end:
+                    LOG.debug("End time is earlier that start time... redoing check.")
+                    turn_on = now < end or now > start
+                    
 
-                if start < now < end:
+                if turn_on:
                     LOG.debug('Turning lights for zone %s on' % zone_num)
                     turn_zone_on(zone_num)
                 else:
