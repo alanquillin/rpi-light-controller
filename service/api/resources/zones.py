@@ -19,8 +19,9 @@ class Zones(BaseResource, ResourceMixinBase):
             #HACK... not sure why the auto increment is not working in sqlalchemy... works on the DB.. so this is a temp fix
             zones = ZonesDB.all(db_session)
             ids = [z.to_dict()['id'] for z in zones]
-            data['id'] = max(ids) + 1
-            
+            if ids:
+                data['id'] = max(ids) + 1
+            else: data['id'] = 1
             
             self.logger.debug("Creating zone with: %s", data)
             zone = ZonesDB.create(db_session, **data)
