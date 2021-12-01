@@ -37,29 +37,36 @@ export class DataService {
     return this.http.get<Zone[]>(url, {});
   }
 
-  getZone(zoneId: number): Observable<Zone[]> {
+  getZone(zoneId: number): Observable<Zone> {
     const url = `${this.baseUrl}/zones/${zoneId}`;
-    return this.http.get<Zone[]>(url, {});
+    return this.http.get<Zone>(url, {});
+  }
+
+  deleteZone(zoneId: number): Observable<any> {
+    const url = `${this.baseUrl}/zones/${zoneId}`;
+    return this.http.delete<any>(url, {});
   }
 
   turnZoneOn(zoneId: number): Observable<any> {
     const url = `${this.baseUrl}/zones/${zoneId}/on`;
     const result = this.http.post<any>(url, {});
-    result.subscribe();
     return result;
   }
 
   turnZoneOff(zoneId: number): Observable<any> {
     const url = `${this.baseUrl}/zones/${zoneId}/off`;
     const result = this.http.post<any>(url, {});
-    result.subscribe();
     return result;
   }
 
   updateZone(zoneId: number, data: any): Observable<any> {
     const url = `${this.baseUrl}/zones/${zoneId}`;
     const result = this.http.patch<any>(url, data);
-    result.subscribe();
     return result;
+  }
+
+  addZone(zone: Zone): Observable<any> {
+    const url = `${this.baseUrl}/zones`;
+    return this.http.post<any>(url, zone, {});
   }
 }

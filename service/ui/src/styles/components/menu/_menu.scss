@@ -1,0 +1,386 @@
+@use "sass:math";
+
+@import "../../scss/variables";
+@import "../../scss/mixins";
+
+.dp-menu {
+    display: inline-block;
+    position: relative;
+    width: auto;
+    max-width: $menu-width * 2;
+    text-align: left;
+
+    &:after {
+        @include type-icon();
+        @include dp-absolute--vertical();
+        right: 0;
+        padding: 0 $menu-padding;
+        content: '\e5d7';
+    }
+}
+
+.dp-menu--button {
+    position: relative;
+    margin: 0;
+    border: none;
+    text-align: left;
+    z-index: 1;
+
+    &.dp-button {
+        padding-right: $menu-padding * 3;
+
+        &.dp-button--outline {
+            width: 100%;
+        }
+        &.dp-button--sm {
+            padding-right: $menu-padding * 3;
+        }
+    }
+}
+.dp-menu--list {
+    @include shadow-4dp();
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: auto;
+    max-width: 372px;
+    height: auto;
+    max-height: 264px;
+    background: $menu-background;
+    border: $menu-border;
+    border-radius: $menu-border-radius;
+    padding: (math.div($menu-padding, 2) - 2);
+    margin: 0;
+    list-style: none;
+    overflow: auto;
+
+    .dp-menu--item {
+        display: block;
+        position: relative;
+        width: 100%;
+        border: none;
+        padding: 0;
+    }
+}
+
+/* Menu with Buttons */
+
+.dp-menu--list {
+
+    .dp-menu--item {
+
+        > .dp-button {
+            display: block;
+            position: relative;
+            width: 100% !important;
+            height: auto;
+            min-height: $menu-height;
+            padding: (math.div($menu-padding, 2) - 4) $menu-padding !important;
+            margin: 0 !important;
+            border: none;
+            border-radius: $menu-border-radius !important;
+            text-align: left;
+            line-height: $menu-line-height + 2 !important;
+
+            &:hover {
+                background: $menu-background-hover;
+            }
+            &[disabled][disabled],
+            &.dp-button--disabled {
+                display: flex !important;
+                background: transparent !important;
+
+                &:after {
+                    @include type-icon();
+                    margin-left: $menu-margin * 2;
+                    line-height: unset;
+                    content: '\e14b';
+                    color: $menu-color-gray;
+                }
+            }
+            .dp-button--value,
+            > .ng-binding {
+                @extend %ellipsis;
+                white-space: nowrap !important;
+            }
+        }
+    }
+}
+
+/* Menu with Icon */
+
+.dp-menu {
+
+    &.dp-menu--with-icon {
+        width: auto;
+
+        .dp-menu--button {
+            padding: 0 $menu-padding;
+            width: auto;
+        }
+        .dp-menu--list {
+            width: auto;
+
+            &.dp-menu--icons {
+
+                .dp-menu--item {
+
+                    .dp-menu--button {
+                        padding-left: ($menu-padding * 3) !important;
+
+                        .dp-button--value {
+                            white-space: normal !important;
+
+                            span {
+                                @extend %break-word;
+                                @extend %break-all;
+                                display: inline-block !important;
+                            }
+                        }
+                    }
+                    .dp-menu--foot {
+
+                        .dp-menu--button {
+                            padding-left: $menu-padding !important;
+                        }
+                    }
+                }
+            }
+            .dp-menu--item {
+
+                .dp-checkbox {
+                    height: auto;
+                }
+            }
+        }
+        &:after {
+            display: none;
+        }
+    }
+}
+
+/* Menu with Checkboxes */
+
+.dp-menu--list {
+
+    .dp-menu--item {
+
+        .dp-checkbox {
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+
+            .dp-checkbox--input {
+
+                + .dp-checkbox--label {
+                    display: flex;
+                    padding: ($menu-height - 30) ($menu-padding) ($menu-height - 30) (($menu-padding * 2) + 4);
+                    border-radius: $menu-border-radius;
+
+                    &:hover,
+                    &:focus {
+                        background: $menu-background-hover;
+                        outline: none;
+
+                        &:before {
+                            color: transparent;
+                        }
+                        .dp-checkbox--value {
+                            color: black;
+                        }
+                    }
+                    &:before {
+                        margin: ($menu-margin - 1) $menu-margin;
+                        background: transparent;
+                        border-color: transparent;
+                        box-shadow: none;
+                    }
+                    .dp-checkbox--value {
+                        @extend %ellipsis;
+                        white-space: nowrap !important;
+                    }
+                }
+                &.active,
+                &[checked="checked"],
+                &.ng-not-empty {
+
+                    + .dp-checkbox--label {
+
+                        &:before {
+                            background: transparent;
+                            border-color: transparent;
+                            box-shadow: none;
+                            color: $menu-color;
+                        }
+                        .dp-checkbox--value {
+                            color: $menu-color;
+                        }
+                    }
+                }
+            }
+
+            /* Checkbox with Button */
+
+            &.dp-checkbox--with-button {
+
+                &:hover {
+
+                    .dp-checkbox--input {
+
+                        + .dp-checkbox--label {
+                            background: $menu-background-hover;
+                        }
+                    }
+                }
+                .dp-checkbox--input {
+
+                    + .dp-checkbox--label {
+                        padding-right: $menu-padding * 3;
+
+                        + .dp-button {
+                            position: absolute;
+                            top: 0;
+                            right: 0;
+                            width: auto;
+                            margin: math.div($menu-margin, 2);
+                            z-index: 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* Menu with Textfield */
+
+.dp-menu--list {
+
+    .dp-menu--item {
+
+        .dp-textfield {
+            width: 100% !important;
+            min-width: auto !important;
+            max-width: none !important;
+            padding: 0 ($menu-padding - 4) !important;
+            margin: ($menu-margin * 2) 0 !important;
+
+            .dp-textfield--input {
+                @include dp-textfield();
+                min-height: auto;
+                font-size: 12px;
+                font-weight: 400;
+                line-height: 28px;
+
+                &::-webkit-input-placeholder {
+                    color: $input-text-color-gray;
+                }
+                &::-moz-placeholder {
+                    color: $input-text-color-gray;
+                }
+                &:-ms-input-placeholder {
+                    color: $input-text-color-gray;
+                }
+                &:-moz-placeholder {
+                    color: $input-text-color-gray;
+                }
+                &:hover {
+                    @include dp-textfield-hover();
+                }
+                &:focus {
+                    @include dp-textfield-focus();
+                }
+            }
+        }
+    }
+}
+
+/* Menu with Tabs */
+
+.dp-menu--list {
+
+    .dp-menu--item {
+
+        .dp-tab {
+            display: block;
+            width: calc(100% + #{($menu-margin * 2)});
+            min-width: $menu-width;
+            padding: 0;
+            margin: 0 (-$menu-margin) ($menu-margin * 2) (-$menu-margin);
+        }
+    }
+}
+
+/* Menu with Head and Foot */
+
+.dp-menu--list {
+
+    .dp-menu--item {
+
+        .dp-menu--head {
+            padding: 0 ($menu-padding - 4);
+            margin: 0;
+            font-size: 14px;
+            line-height: $menu-height;
+            text-align: left;
+            white-space: nowrap;
+            color: $menu-color-gray;
+        }
+        .dp-menu--foot {
+            padding: 0;
+            margin: 0;
+        }
+    }
+}
+
+
+/* Menu Placement */
+
+.dp-menu {
+
+    &.dp-menu--left {
+        margin: 0 ($menu-margin * 2) 0 0;
+        float: left;
+
+        .dp-menu--list {
+            left: 0;
+            right: auto !important;
+        }
+    }
+    &.dp-menu--right {
+        margin: 0 0 0 ($menu-margin * 2);
+        float: right;
+
+        .dp-menu--list {
+            left: auto;
+            right: 0 !important;
+        }
+    }
+}
+
+/* Menu Disabled */
+
+.dp-menu {
+
+    &.disabled,
+    &--disabled,
+    &.dp-menu--disabled {
+
+        &:after {
+            opacity: 0.5;
+        }
+    }
+}
+
+/* Menu Empty */
+
+.dp-menu {
+
+    .dp-menu--item {
+
+        .dp-layout--empty {
+            padding: ($list-padding * 2) ($list-padding * 4);
+        }
+    }
+}

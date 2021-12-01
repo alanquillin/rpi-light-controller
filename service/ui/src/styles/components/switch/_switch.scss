@@ -1,0 +1,177 @@
+@import "../../scss/variables";
+@import "../../scss/mixins";
+
+.dp-switch {
+    display: inline-block;
+    position: relative;
+    width: $switch-width;
+    height: $switch-height;
+    margin: $switch-margin 0;
+
+    .dp-switch--input {
+        display: none;
+
+        &:checked {
+
+            ~ .dp-switch--label {
+                background: $switch-background-primary;
+
+                &:before,
+                &:after {
+                    left: 50%;
+                }
+                &:before {
+                    background: $switch-background-primary;
+                    animation: switch-on 1s ease;
+                }
+            }
+            &:disabled {
+
+                ~ .dp-switch--label {
+
+                    &:before {
+                        right: auto;
+                        left: 0;
+                        text-align: left;
+                        color: $switch-color-opaque;
+                    }
+                }
+            }
+        }
+        &:disabled {
+
+            ~ .dp-switch--label {
+                cursor: default;
+
+                &:before {
+                    @include type-icon();
+                    right: 0;
+                    width: auto;
+                    height: auto;
+                    background: transparent;
+                    margin: ($switch-margin * 2) (($switch-margin * 3) + 1);
+                    font-size: $switch-icon-size;
+                    content: '\e897';
+                    text-align: right;
+                    color: $switch-color-gray;
+                    animation: none;
+                    opacity: 1;
+                }
+            }
+        }
+    }
+    .dp-switch--label {
+        display: inline-block;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: $switch-background-gray;
+        border-radius: $switch-border-radius;
+        cursor: pointer;
+
+        &:before,
+        &:after {
+            position: absolute;
+            display: block;
+            top: 0;
+            left: 0;
+            width: $switch-width - 30;
+            height: $switch-height - 6;
+            border-radius: $switch-border-radius;
+            margin: $switch-margin;
+            content: '';
+        }
+        &:before {
+            transition: transform .35s ease 0s;
+            animation: switch-off 1s ease;
+            opacity: 0;
+        }
+        &:after {
+            @include shadow-4dp();
+            background: $switch-background;
+            transition: background .35s ease 0s,left .35s ease 0s;
+        }
+    }
+}
+
+/* Switch Keyframes */
+
+@keyframes switch-off {
+    0% {
+        transform: scale(1, 1);
+        opacity: 0;
+    }
+    50% {
+        opacity: .5;
+    }
+    100% {
+        transform: scale(2, 2);
+        opacity: 0;
+    }
+}
+@-moz-keyframes switch-off {
+    0% {
+        transform: scale(1, 1);
+        opacity: 0;
+    }
+    50% {
+        opacity: .5;
+    }
+    100% {
+        transform: scale(2, 2);
+        opacity: 0;
+    }
+}
+@-webkit-keyframes switch-off {
+    0% {
+        transform: scale(1, 1);
+        opacity: 0;
+    }
+    50% {
+        opacity: .5;
+    }
+    100% {
+        transform: scale(2, 2);
+        opacity: 0;
+    }
+}
+
+@keyframes switch-on {
+    0% {
+        transform: scale(1, 1);
+        opacity: 0;
+    }
+    50% {
+        opacity: .5;
+    }
+    100% {
+        transform: scale(2, 2);
+        opacity: 0;
+    }
+}
+@-moz-keyframes switch-on {
+    0% {
+        transform: scale(1, 1);
+        opacity: 0;
+    }
+    50% {
+        opacity: .5;
+    }
+    100% {
+        transform: scale(2, 2);
+        opacity: 0;
+    }
+}
+@-webkit-keyframes switch-on {
+    0% {
+        transform: scale(1, 1);
+        opacity: 0;
+    }
+    50% {
+        opacity: .5;
+    }
+    100% {
+        transform: scale(2, 2);
+        opacity: 0;
+    }
+}

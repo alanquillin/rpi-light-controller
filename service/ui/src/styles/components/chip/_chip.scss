@@ -1,0 +1,95 @@
+@use "sass:math";
+
+@import "../../scss/variables";
+@import "../../scss/mixins";
+
+.dp-chip {
+    display: inline-flex !important;
+    position: relative;
+    width: auto;
+    max-width: 100%;
+    height: $chip-height;
+    line-height: $chip-height;
+    padding: 0 ($chip-padding * 2);
+    margin: $chip-margin;
+    background: $chip-background;
+    border: none;
+    border-radius: $chip-border-radius;
+    outline: none;
+
+    .dp-chip--text {
+        @include type-button-mini();
+        @extend %ellipsis;
+        display: inline-block;
+        width: auto;
+        max-width: 100%;
+        padding: 0 $chip-padding;
+        color: $chip-color-white;
+    }
+    .dp-chip--action {
+        display: inline-block;
+        width: $chip-width;
+        height: $chip-height;
+        padding: 0;
+        margin: 0;
+        background: transparent;
+        border: none;
+        outline: none;
+        float: right;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+
+        .material-icons {
+            margin: 0;
+            color: $chip-color-opaque;
+            margin: 0;
+        }
+        &:hover {
+
+            .material-icons {
+                color: $chip-color-white;
+            }
+        }
+    }
+}
+
+/* Chip with Button */
+
+.dp-chip {
+
+    &.dp-chip--with-button {
+        @include shadow-4dp();
+        padding: 0 math.div(($chip-padding * 2), 2) 0 ($chip-padding * 2);
+
+        .dp-chip--text {
+            max-width: calc(100% - #{$chip-width});
+        }
+    }
+}
+
+/* Chip Disabled */
+
+.dp-chip {
+
+    &.dp-chip--disabled {
+        background: $chip-background-disabled;
+    }
+}
+
+/* IE Edge */
+
+.ms-ie,
+.ms-edge {
+
+    .dp-chip {
+
+        &.dp-chip--with-button {
+            padding: 0 ($chip-padding * 2);
+
+            .dp-chip--text {
+                max-width: none;
+            }
+        }
+    }
+}

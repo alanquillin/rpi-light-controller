@@ -1,0 +1,77 @@
+@import "../../scss/variables";
+@import "../../scss/mixins";
+
+.dp-tab {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding: 0 ($tab-padding * 6);
+
+    .dp-tab--list {
+        display: inline-block;
+        width: auto;
+
+        .dp-tab--item {
+            width: auto;
+            float: left;
+
+            .dp-tab--button {
+                margin: 0;
+                background: transparent;
+                border-radius: 0;
+
+                .dp-tab--value {
+                    color: $tab-color-gray;
+                }
+                &:after {
+                    position: absolute;
+                    bottom: 0;
+                    left: 50%;
+                    width: 0;
+                    height: 2px;
+                    background: $tab-background;
+                    content: '';
+                    transition: width .35s ease 0s,left .35s ease 0s;
+                    z-index: 1;
+                }
+                &:hover,
+                &.active,
+                &.dp-tab--active {
+
+                    .dp-tab--value {
+                        color: $tab-color-black;
+                    }
+                    &:after {
+                        left: 0;
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    }
+    &:after {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        margin: 0;
+        border-bottom: $tab-border;
+        content: '';
+    }
+}
+
+/* Tab Placement */
+
+.dp-tab {
+
+    &.dp-tab--left {
+        text-align: left;
+    }
+    &.dp-tab--center {
+        text-align: center;
+    }
+    &.dp-tab--right {
+        text-align: right;
+    }
+}

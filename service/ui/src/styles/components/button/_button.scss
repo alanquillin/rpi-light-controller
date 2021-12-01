@@ -1,0 +1,236 @@
+@use "sass:math";
+
+@import "../../scss/variables";
+@import "../../scss/mixins";
+
+.dp-button {
+    @include type-button();
+    display: inline-block;
+    position: relative;
+    height: $button-height;
+    padding: 0 $button-padding;
+    margin: 0 ($button-margin * 2);
+    background: transparent;
+    border: none;
+    border-radius: $button-border-radius;
+    outline: none;
+    overflow: hidden;
+    text-decoration: none !important;
+    text-align: center;
+    line-height: $button-height;
+    vertical-align: middle;
+    color: $color-black;
+    user-select: text;
+    cursor: pointer;
+
+    .dp-button--value {
+        display: inline-block;
+        max-width: 100%;
+        padding: 0;
+    }
+    &:hover {
+        background: $button-background-hover;
+        text-decoration: none;
+        color: $color-black;
+    }
+    &:focus,
+    &:active,
+    &.active,
+    &--active {
+        outline: none;
+        text-decoration: none;
+        color: $color-black;
+    }
+    &:focus {
+        background: $button-background-focus;
+    }
+    &:active,
+    &.active,
+    &--active {
+        background: $button-background-active;
+    }
+    &[disabled][disabled],
+    &.dp-button--disabled {
+        background: $button-background-disabled !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: $color-gray !important;
+        pointer-events: none;
+        cursor: default !important;
+    }
+}
+
+/* button with color */
+
+.dp-button {
+
+    &.dp-button--color {
+        color: $color-purple;
+
+        .dp-button--value,
+        .material-icons {
+
+            &.dp-button--primary {
+                color: $color-purple;
+            }
+            &.dp-button--blue,
+            &.ephemeral {
+                color: $color-blue;
+            }
+            &.dp-button--green,
+            &.passed {
+                color: $color-green;
+            }
+            &.dp-button--yellow,
+            &.warning,
+            &.pending {
+                color: $color-yellow;
+            }
+            &.dp-button--red,
+            &.failed {
+                color: $color-red;
+            }
+        }
+    }
+}
+
+/* button with outline */
+
+.dp-button {
+
+    &.dp-button--outline {
+        line-height: $button-height - 2;
+        background: $button-background;
+        border: $button-border;
+
+        &:hover {
+            border-color: $button-border-hover;
+        }
+        &:focus {
+            border-color: $button-border-focus;
+        }
+        &[disabled][disabled],
+        &.dp-button--disabled {
+            color: $color-gray !important;
+        }
+        &.dp-button--nobackground {
+            background: transparent;
+        }
+    }
+}
+
+/* button with solid background */
+
+.dp-button {
+
+    &.dp-button--solid {
+        @include shadow-4dp();
+        background: $color-purple;
+        color: $color-white;
+
+        &:hover {
+            @include shadow-6dp();
+        }
+        &:active {
+            @include shadow-8dp();
+        }
+        &:focus:not(:active) {
+            @include shadow-focus();
+        }
+    }
+}
+
+/* button with icon */
+
+.dp-button {
+
+    &.dp-button--icon {
+        min-width: $button-width + 10;
+        overflow: visible;
+
+        .material-icons {
+            padding-right: $button-padding;
+            line-height: inherit;
+            vertical-align: top;
+            color: inherit;
+            float: left;
+        }
+        &.dp-button--absolute {
+
+            .material-icons,
+            .dp-initial {
+                @include dp-absolute();
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+        }
+    }
+}
+
+/* button inline */
+
+.dp-button {
+
+    &.dp-button--inline {
+        @extend %break-word;
+        @extend %break-all;
+        display: inline !important;
+        width: auto;
+        height: auto;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-bottom: 2px solid transparent;
+        border-radius: 0;
+        font-size: inherit;
+        line-height: inherit;
+        text-align: left;
+        vertical-align: baseline;
+
+        &:hover,
+        &:focus {
+            background: transparent;
+            border-color: $button-border-inline;
+        }
+    }
+}
+
+/* button sizes */
+
+.dp-button {
+
+    &.dp-button--sm {
+        @include type-button-mini();
+        height: $button-height - 6;
+        padding: 0 $button-padding - 6;
+        line-height: $button-height - 6;
+
+        &.dp-button--icon {
+            min-width: $button-width !important;
+
+            .material-icons {
+                padding-right: math.div($button-padding, 2);
+                line-height: $button-height - 6;
+            }
+        }
+        .dp-button--value {
+            font-weight: 500;
+        }
+    }
+    &.dp-button--bg {
+        line-height: $button-height - 2;
+    }
+}
+
+/* button placement */
+
+.dp-button {
+
+    &.dp-button--left {
+        float: left;
+        margin: 0 ($button-margin * 2) 0 0;
+    }
+    &.dp-button--right {
+        float: right;
+        margin: 0 0 0 ($button-margin * 2);
+    }
+}

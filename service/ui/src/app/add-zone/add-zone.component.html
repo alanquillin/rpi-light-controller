@@ -1,0 +1,95 @@
+<div class="header">
+    <div class="header-content">
+        <a href="/"><mat-icon>keyboard_return</mat-icon> Return</a>
+    </div>
+</div>
+<div class="content">
+    <form class="dp-form" [formGroup]="addZoneFormGroup" (ngSubmit)="submit()">
+        <div class="input-row" fxLayout="colum" fxLayout.lt-md="column" fxLayoutGap="20px" fxLayoutGap.lt-md="0px">
+        <fieldset class="dp-fieldset" fxLayout="colum" fxLayout.lt-md="column" fxLayoutGap="20px" fxLayoutGap.lt-md="0px">
+            <mat-form-field class="dp-textfield dp-textfield--required" fxFlex>
+                <input id="signup_create_account_description_input"
+                    class="dp-textfield--input"
+                    formControlName="description"
+                    [(ngModel)]="zone.description"
+                    matInput
+                    required />
+                <mat-label *ngIf="!addZoneForm.description.disabled">Description</mat-label>
+                <mat-error *ngIf="addZoneForm.description.hasError('required')">
+                    description is required.
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="dp-textfield dp-textfield--required" fxFlex>
+                <input id="signup_create_account_on_input"
+                    class="dp-textfield--input"
+                    formControlName="on"
+                    [(ngModel)]="zone.on"
+                    matInput
+                    required />
+                <mat-label *ngIf="!addZoneForm.on.disabled">Lights on (Time in format: 'HH:mm:ss')</mat-label>
+                <mat-error *ngIf="addZoneForm.on.hasError('required')">
+                    Lights on time is required.
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="dp-textfield dp-textfield--required" fxFlex>
+                <input id="signup_create_account_off_input"
+                    class="dp-textfield--input"
+                    formControlName="off"
+                    [(ngModel)]="zone.off"
+                    matInput
+                    required />
+                <mat-label *ngIf="!addZoneForm.off.disabled">Lights off (Time in format: 'HH:mm:ss')</mat-label>
+                <mat-error *ngIf="addZoneForm.off.hasError('required')">
+                    Lights off time is required.
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="dp-textfield dp-textfield--required" fxFlex>
+                <input id="signup_create_account_pinNum_input"
+                    class="dp-textfield--input"
+                    formControlName="pinNum"
+                    [(ngModel)]="zone.pinNum"
+                    matInput
+                    required />
+                <mat-label *ngIf="!addZoneForm.pinNum.disabled">RPi Pin Number (Either the GPIO or BOARD pin number)</mat-label>
+                <mat-error *ngIf="addZoneForm.pinNum.hasError('required')">
+                    RPi Pin Number is required.
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="dp-textfield dp-textfield--required" fxFlex>
+                <mat-select
+                    class="mat-select"
+                    formControlName="program"
+                    [(ngModel)]="zone.program"
+                    matInput
+                    required>
+                    <mat-option *ngFor="let program of programs" [value]="program">
+                    {{ program }}
+                    </mat-option>
+                </mat-select>
+                <mat-label *ngIf="!addZoneForm.program.disabled">Program</mat-label>
+                <mat-error *ngIf="addZoneForm.program.hasError('required')">
+                    Program is required.
+                </mat-error>
+            </mat-form-field>
+        </fieldset>
+
+        <div class="dp-form--actions">
+            <button id="signup_create_account_submit"
+                class="dp-button dp-button--color dp-button--solid dp-button--icon"
+                [disabled]="!addZoneFormGroup.valid || processing"
+                mat-button>
+                <div class="dp-spinner dp-spinner--inline dp-spinner--mini"
+                    *ngIf="processing">
+                    <div class="dp-spinner--icon"></div>
+                </div>
+                <span>Add Zone</span>
+            </button>
+        </div>
+        </div>
+    </form>
+</div>
+<div class="footer"></div>

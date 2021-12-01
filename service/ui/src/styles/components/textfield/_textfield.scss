@@ -1,0 +1,270 @@
+@use "sass:math";
+
+@import "../../scss/variables";
+@import "../../scss/mixins";
+
+.dp-textfield {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    min-width: 124px;
+    max-width: 248px;
+    text-align: left;
+
+    .dp-textfield--input {
+        @include dp-textfield-input();
+
+        &:hover {
+            border-color: $input-text-border-hover;
+        }
+        &:focus {
+            border-color: $input-text-border-focus;
+            box-shadow: $input-text-box-shadow-focus;
+        }
+        &:focus,
+        &.ng-not-empty {
+            @include dp-textfield-fixed-input();
+
+            + .dp-textfield--label,
+            + .dp-menu + .dp-textfield--label,
+            + .dp-menu--list + .dp-textfield--label {
+                @include dp-textfield-fixed-label();
+
+                .material-icons {
+                    @include dp-textfield-fixed-icon();
+                }
+            }
+        }
+    }
+    .dp-textfield--label {
+        @include dp-textfield-label();
+        @extend %ellipsis;
+
+        .material-icons {
+            @include dp-textfield-icon();
+        }
+    }
+}
+
+/* Textfield with Fixed Label */
+
+.dp-textfield {
+
+    &.dp-textfield--fixed-label {
+
+        .dp-textfield--input {
+            @include dp-textfield-fixed-input();
+        }
+        .dp-textfield--label {
+            @include dp-textfield-fixed-label();
+
+            .material-icons {
+                @include dp-textfield-fixed-icon();
+            }
+        }
+    }
+}
+.dp-textfield {
+
+    .dp-textfield--input {
+
+        &.dp-textfield--textarea {
+            @include dp-textfield-fixed-input();
+            padding-top: $input-text-padding + 8;
+            padding-bottom: math.div($input-text-padding, 2) - 2;
+            min-height: auto;
+            max-height: none;
+            resize: vertical;
+
+            + .dp-textfield--label {
+                @include dp-textfield-fixed-label();
+                line-height: math.div($input-text-height, 2) + 10;
+
+                &:before {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: calc(100% - #{($input-text-margin * 3)});
+                    height: calc(100% - #{($input-text-margin - 5)});
+                    background-image: -webkit-linear-gradient(0deg,rgba(255,255,255,0) 0%,rgba(255,255,255,1) 30%);
+                    background-image: linear-gradient(0deg,rgba(255,255,255,0) 0%,rgba(255,255,255,1) 30%);
+                    border-radius: $input-text-border-radius + 1;
+                    margin: $input-text-margin - 5;
+                    content: '';
+                    z-index: -1;
+                }
+                .material-icons {
+                    @include dp-textfield-fixed-icon();
+                }
+            }
+        }
+    }
+}
+
+/* Textfield without Label */
+
+.dp-textfield {
+
+    &.dp-textfield--no-label {
+
+        .dp-textfield--input,
+        &.dp-textfield---textarea {
+            @include dp-textfield-no-label-input();
+        }
+        &.dp-textfield--with-actions {
+
+            .dp-textfield--actions {
+                padding: math.div($input-text-padding, 4) - 1;
+            }
+        }
+    }
+}
+
+/* Textfield with Actions */
+
+.dp-textfield {
+
+    &.dp-textfield--with-actions {
+
+        .dp-textfield--input {
+            padding-right: $input-text-padding * 6 !important;
+        }
+        .dp-textfield--actions {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: ($input-text-padding - 6);
+
+            .dp-button {
+                margin: 0 !important;
+            }
+        }
+    }
+}
+
+/* Textfield Disabled */
+
+.dp-textfield {
+
+    .dp-textfield--input {
+
+        &[disabled][disabled],
+        &.dp-textfield--disabled {
+            @include dp-textfield-disabled();
+
+            + .dp-textfield--label {
+
+                &:before {
+                    background-image: none;
+                }
+            }
+        }
+    }
+}
+
+/* Textfield Required */
+
+.dp-textfield {
+
+    &.dp-textfield--required {
+
+        .dp-textfield--input {
+
+            + .dp-textfield--label:after {
+                content: ' (Required)'
+            }
+        }
+    }
+}
+
+/* Textfield Error */
+
+.dp-textfield {
+
+    &.dp-textfield--error {
+
+        .dp-textfield--input {
+            border-color: $input-text-color-red !important;
+
+            &::-webkit-input-placeholder {
+                color: $input-text-color-red !important;
+            }
+            &::-moz-placeholder {
+                color: $input-text-color-red !important;
+            }
+            &:-ms-input-placeholder {
+                color: $input-text-color-red !important;
+            }
+            &:-moz-placeholder {
+                color: $input-text-color-red !important;
+            }
+        }
+        .dp-textfield--label {
+            color: $input-text-color-red !important;
+        }
+    }
+}
+
+/* Textfield Number Type */
+
+.dp-textfield {
+
+    &.dp-textfield--number-helper {
+
+        .dp-textfield--input {
+            padding-right: $input-text-padding * 3;
+
+            &:focus,
+            &.ng-not-empty {
+                padding-right: $input-text-padding;
+            }
+        }
+    }
+}
+
+/* Textfield Filter */
+
+.dp-textfield {
+
+    &.dp-textfield--filter {
+
+        .dp-textfield--input {
+            @include dp-textfield-filter-input();
+            @include type-body-2();
+            padding-right: $input-text-padding * 4 !important;
+        }
+        .dp-textfield--actions {
+            padding: 0 !important;
+        }
+    }
+}
+
+/* IE Edge */
+
+.ms-ie,
+.ms-edge {
+
+    .dp-textfield {
+
+        .dp-textfield--input {
+            box-shadow: none;
+
+            &::-ms-clear,
+            &::-ms-reveal {
+                display: none;
+            }
+        }
+    }
+    .dp-filefield {
+
+        &.dp-filefield--outline {
+            box-shadow: none;
+        }
+    }
+}
+
+/* Lastpass */
+
+div[id^=__lpform_] {
+	display: none !important;
+}

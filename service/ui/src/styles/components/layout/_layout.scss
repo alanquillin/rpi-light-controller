@@ -1,0 +1,86 @@
+@import "../../scss/variables";
+@import "../../scss/mixins";
+
+/* Layout Section */
+
+.dp-layout--section {
+    display: inline-block;
+    width: 100%;
+
+    &.dp-layout--with-padding {
+        padding: ($layout-padding * 4) 0;
+    }
+}
+
+/* Layout Empty */
+
+.dp-layout--empty {
+    width: 100%;
+    max-width: 744px;
+    padding: ($layout-padding * 4) 0;
+    margin: 0 auto;
+    text-align: center;
+
+    .material-icons {
+        font-size: $layout-font-size;
+        margin: ($layout-margin * 2) 0;
+    }
+    .dp-button {
+        margin: $layout-margin * 2 !important;
+
+        .material-icons {
+            margin: 0;
+        }
+    }
+}
+
+/* Layout Horizontal Rule */
+
+.dp-layout--hr {
+    @extend %clearfix;
+    position: relative;
+    height: 0;
+    margin: ($layout-padding * 4) 0;
+    border: 0;
+    border-bottom: $layout-sidebar-border;
+
+    &.dp-layout--hr-text {
+
+        .dp-layout--hr-value {
+            @include dp-absolute();
+            @include type-body-1();
+            color: $color-gray;
+
+            &:before {
+                @include dp-absolute();
+                width: 140%;
+                height: 100%;
+                background: $layout-background;
+                content: '';
+                z-index: -1;
+            }
+        }
+    }
+}
+
+/* Layout with Side */
+
+.dp-layout--withaside {
+    display: inline-block;
+    width: calc(100% - #{$layout-aside});
+}
+
+.dp-layout--aside {
+    display: inline-block;
+    width: $layout-aside;
+    min-height: 1px;
+
+    &.dp-layout--aside---left {
+        float: left;
+        padding: 0 ($layout-padding * 6) 0 0;
+    }
+    &.dp-layout--aside---right {
+        float: right;
+        padding: 0 0 0 ($layout-padding * 6);
+    }
+}

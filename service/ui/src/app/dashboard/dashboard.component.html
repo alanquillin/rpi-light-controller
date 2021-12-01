@@ -1,0 +1,88 @@
+<div class="header">
+    <div class="header-content">
+        <a class="title" href="/">RPI Light Controller</a>
+        
+        <div class="menus">
+            <button mat-icon-button [matMenuTriggerFor]="zonePicker" class="zone-picker">
+                {{selectedZone ? "Zone " + selectedZone.id + ": " + selectedZone.description : "Select Zone"}}
+            </button>
+            <mat-menu #zonePicker="matMenu">
+                <button mat-menu-item *ngFor="let zone of zones"
+                        (click)="selectZone(zone)">
+                    Zone {{zone.id}}: {{ zone.description }}
+                </button>
+            </mat-menu>
+
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item>
+                    <mat-icon>add</mat-icon>
+                    <a href="/add-zone">Add Zone</a>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+</div>
+<div class="content">
+    <div *ngIf="loading">
+        Loading....
+    </div>
+    <div *ngIf="!loading">
+        <div *ngIf="selectedZone">
+            <div class="zone-info">
+                <span class="heading">Zone {{selectedZone.id}} Details 
+                    <button *ngIf="!editingZoneInfo" mat-icon-button (click)="editZoneInfo()">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button *ngIf="!editingZoneInfo" mat-icon-button (click)="deleteZone()">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                    <button *ngIf="editingZoneInfo" mat-button (click)="saveZoneInfo()">
+                        <mat-icon>save</mat-icon> Save
+                    </button>
+                    <button *ngIf="editingZoneInfo" mat-button (click)="cancelZoneInfo()">
+                        <mat-icon>close</mat-icon> Cancel
+                    </button>
+                </span>
+                Description: <span *ngIf="!editingZoneInfo">{{selectedZone.description}}</span><input matInput *ngIf="editingZoneInfo" [(ngModel)]="selectedZone.description" /><br/>
+                RPi Board Pin Number: <span *ngIf="!editingZoneInfo">{{selectedZone.pinNum}}</span><input matInput *ngIf="editingZoneInfo" [(ngModel)]="selectedZone.pinNum" /><br/>
+            </div>
+            <div class="select-program">
+                <mat-label>Program: </mat-label>
+                <mat-button-toggle-group [(value)] = "selectedZone.program" (change)="programChange($event)" name="fontStyle" aria-label="Font Style" >
+                    <mat-button-toggle  *ngFor="let program of programs;" [value]="program">{{program}}</mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
+            <div class="program-details">
+                <div *ngIf="selectedZone.program === 'timer'">
+                    <span class="heading">Timer Schedule 
+                        <button *ngIf="!editingZoneSchedule" mat-icon-button (click)="editZoneSchedule()">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button *ngIf="editingZoneSchedule" mat-button (click)="saveZoneSchedule()">
+                            <mat-icon>save</mat-icon> Save
+                        </button>
+                        <button *ngIf="editingZoneSchedule" mat-button (click)="cancelZoneSchedule()">
+                            <mat-icon>close</mat-icon> Cancel
+                        </button>
+                    </span>
+                    State: {{selectedZone.state}}<br/>
+                    On: <span *ngIf="!editingZoneSchedule">{{selectedZone.on}}</span><input matInput *ngIf="editingZoneSchedule" [(ngModel)]="selectedZone.on" /><br/>
+                    Off: <span *ngIf="!editingZoneSchedule">{{selectedZone.off}}</span><input matInput *ngIf="editingZoneSchedule" [(ngModel)]="selectedZone.off" /><br/>
+                </div>
+                <div *ngIf="selectedZone.program === 'manual'">
+                    <section class="example-section">
+                        <mat-slide-toggle
+                            (change)="toggle($event)"
+                            [checked]="selectedZone.state == 'on'">
+                            {{ selectedZone.state == 'on' ? "Turn Off" : "Turn On" }}
+                        </mat-slide-toggle>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer"></div>

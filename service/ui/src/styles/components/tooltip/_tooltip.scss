@@ -1,0 +1,26 @@
+@import '../../scss/variables';
+@import '../../scss/mixins';
+
+.dp-tooltip {
+  z-index: 9999;
+}
+
+/* Tooltip Sizes */
+
+.dp-tooltip {
+  &.dp-tooltip--min-width {
+    min-width: 248px;
+  }
+}
+
+/* Tooltip No Wrap */
+
+.dp-tooltip {
+  &.dp-tooltip--no-wrap {
+    max-width: none;
+
+    .dp-tooltip--value {
+      white-space: nowrap;
+    }
+  }
+}

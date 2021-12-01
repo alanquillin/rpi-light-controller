@@ -1,0 +1,193 @@
+@use "sass:math";
+
+@import "../../scss/variables";
+@import "../../scss/mixins";
+
+.dp-toggle {
+    display: inline-block;
+    position: relative;
+    width: $toggle-width;
+    height: $toggle-height;
+    background: $toggle-background-gray;
+    border-radius: $toggle-border-radius;
+
+    .dp-toggle--input {
+        display: none;
+
+        &:checked {
+
+            + label {
+                color: $toggle-color;
+            }
+        }
+    }
+    .dp-toggle--label {
+        @include type-button-mini();
+        display: block;
+        position: relative;
+        width: auto;
+        height: 100%;
+        margin: 0;
+        float: left;
+        line-height: $toggle-height;
+        text-align: center;
+        color: $toggle-color-gray;
+        z-index: 1;
+
+        &:hover {
+            background: transparent;
+            color: $toggle-color;
+        }
+    }
+    .dp-toggle--block {
+        @include shadow-4dp();
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: auto;
+        height: calc(100% - #{($toggle-margin * 2)});
+        margin: $toggle-margin;
+        background: $toggle-background;
+        border-radius: $toggle-border-radius;
+        transition: left .35s ease 0s;
+    }
+}
+
+/* Toggle Placement */
+
+.dp-toggle {
+
+    &.dp-toggle--center {
+        display: block;
+    }
+}
+
+/* Toggle Sizes */
+
+.dp-toggle {
+
+    &.dp-toggle--sm {
+        width: 200px;
+        margin: ($toggle-margin * 4) auto;
+    }
+    &.dp-toggle--md {
+        width: 300px;
+        margin: 0 auto ($toggle-margin * 8) auto;
+    }
+    &.dp-toggle--lg {
+        width: 400px;
+        margin: 0 auto ($toggle-margin * 8) auto;
+    }
+}
+
+/* Toggle Count */
+
+.dp-toggle {
+
+    .dp-toggle--label:nth-child(2) {
+
+        &:nth-last-child(4) {
+            width: 50% !important;
+
+            ~ .dp-toggle--label {
+                width: 50% !important;
+            }
+            ~ .dp-toggle--block {
+                width: calc(50% - #{(math.div($toggle-height, 2) - 11)});
+            }
+            ~ .dp-toggle--input {
+
+                &:checked {
+
+                    &:nth-child(3) {
+
+                        + .dp-toggle--label {
+
+                            ~ .dp-toggle--block {
+                                left: 50%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &:nth-last-child(6) {
+            width: 33.33% !important;
+
+            ~ .dp-toggle--label {
+                width: 33.33% !important;
+            }
+            ~ .dp-toggle--block {
+                width: calc(33.33% - #{(math.div($toggle-height, 2) - 11)});
+            }
+            ~ .dp-toggle--input {
+
+                &:checked {
+
+                    &:nth-child(3) {
+
+                        + .dp-toggle--label {
+
+                            ~ .dp-toggle--block {
+                                left: 33.33%;
+                            }
+                        }
+                    }
+                    &:nth-child(5) {
+
+                        + .dp-toggle--label {
+
+                            ~ .dp-toggle--block {
+                                left: 66.66%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        &:nth-last-child(8) {
+            width: 25% !important;
+
+            ~ .dp-toggle--label {
+                width: 25% !important;
+            }
+            ~ .dp-toggle--block {
+                width: calc(25% - #{(math.div($toggle-height, 2) - 11)});
+            }
+            ~ .dp-toggle--input {
+
+                &:checked {
+
+                    &:nth-child(3) {
+
+                        + .dp-toggle--label {
+
+                            ~ .dp-toggle--block {
+                                left: 25%;
+                            }
+                        }
+                    }
+                    &:nth-child(5) {
+
+                        + .dp-toggle--label {
+
+                            ~ .dp-toggle--block {
+                                left: 50%;
+                            }
+                        }
+                    }
+                    &:nth-child(7) {
+
+                        + .dp-toggle--label {
+
+                            ~ .dp-toggle--block {
+                                left: 75%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
