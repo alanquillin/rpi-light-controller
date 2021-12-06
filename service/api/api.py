@@ -24,6 +24,7 @@ from werkzeug.wrappers.base_response import BaseResponse
 
 from lib.config import Config
 from lib import json, logging
+from lib import zones as zoneLib
 from resources.zones import Zone, Zones, ZoneState
 
 
@@ -128,6 +129,7 @@ if __name__ == "__main__":
     if app.config.get("ENV") == "development":
         logger.debug("Setting up development environment")
 
+    zoneLib.initialize()
 
     http_server = WSGIServer(("", port), app, log=IgnoringLogAdapter(app.logger, log_level))
     logger.debug("app.config: %s", app.config)

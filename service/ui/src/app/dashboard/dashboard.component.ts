@@ -20,6 +20,7 @@ export class DashboardComponent {
   loading = true;
   programs = ["timer", "manual", "off"]
   editingZoneInfo = false;
+  editingZonePin = false;
   editingZoneSchedule = false;
   editTimer = false;
 
@@ -151,8 +152,8 @@ export class DashboardComponent {
 
   saveZoneInfo() {
     console.log("stop editing info");
-    if (this.selectedZone && this.selectedZone.id && this.selectedZone.description && this.selectedZone.pinNum)  {
-      this.dataService.updateZone(this.selectedZone.id, {description: this.selectedZone.description, pinNum: this.selectedZone.pinNum}).subscribe((zone: any) => {
+    if (this.selectedZone && this.selectedZone.id && this.selectedZone.description)  {
+      this.dataService.updateZone(this.selectedZone.id, {description: this.selectedZone.description}).subscribe((zone: any) => {
         if (zone) {
           this.selectedZone = zone;
         }
@@ -162,6 +163,8 @@ export class DashboardComponent {
         this.resetSelectZone();
         this.editingZoneInfo = false;
       });
+    } else {
+      this.editingZoneInfo = false;
     }
   }
 
@@ -178,6 +181,43 @@ export class DashboardComponent {
       this.editingZoneInfo = false;
     }
   }
+
+  editZonePin() {
+    this.editingZonePin = true;
+  }
+
+  saveZonePin() {
+    console.log("stop editing info");
+    if (this.selectedZone && this.selectedZone.id && this.selectedZone.pinNum)  {
+      this.dataService.updateZone(this.selectedZone.id, {pinNum: this.selectedZone.pinNum}).subscribe((zone: any) => {
+        if (zone) {
+          this.selectedZone = zone;
+        }
+        this.editingZonePin = false;
+      }, (err: any) => {
+        this.displayError("There was an error trying to update the zone details");
+        this.resetSelectZone();
+        this.editingZonePin = false;
+      });
+    } else {
+      this.editingZonePin = false;
+    }
+  }
+
+  cancelZonePin() {
+    if (this.selectedZone && this.selectedZone.id) {
+      this.refreshSelectedZone(this.selectedZone.id, () => {
+        this.resetSelectZone();
+        this.editingZonePin = false;
+      }, () => {
+        this.resetSelectZone();
+        this.editingZonePin = false;
+      });
+    } else {
+      this.editingZonePin = false;
+    }
+  }
+
 
   editZoneSchedule() {
     this.editingZoneSchedule = true;

@@ -32,22 +32,33 @@
     <div *ngIf="!loading">
         <div *ngIf="selectedZone">
             <div class="zone-info">
-                <span class="heading">Zone {{selectedZone.id}} Details 
-                    <button *ngIf="!editingZoneInfo" mat-icon-button (click)="editZoneInfo()">
+                <span class="heading"><span *ngIf="!editingZoneInfo">{{selectedZone.description}}</span><input matInput *ngIf="editingZoneInfo" [(ngModel)]="selectedZone.description" />
+                    <button *ngIf="!editingZoneInfo" mat-icon-button (click)="editZoneInfo()" color="primary" aria-label="Edit the zone name/description">
                         <mat-icon>edit</mat-icon>
                     </button>
-                    <button *ngIf="!editingZoneInfo" mat-icon-button (click)="deleteZone()">
+                    <button *ngIf="!editingZoneInfo" mat-icon-button (click)="deleteZone()" color="warn" aria-label="Delete Zone">
                         <mat-icon>delete</mat-icon>
                     </button>
-                    <button *ngIf="editingZoneInfo" mat-button (click)="saveZoneInfo()">
+                    <button *ngIf="editingZoneInfo" mat-icon-button (click)="saveZoneInfo()" color="primary" aria-label="">
                         <mat-icon>save</mat-icon> Save
                     </button>
-                    <button *ngIf="editingZoneInfo" mat-button (click)="cancelZoneInfo()">
+                    <button *ngIf="editingZoneInfo" mat-icon-button (click)="cancelZoneInfo()" color="warn">
                         <mat-icon>close</mat-icon> Cancel
                     </button>
                 </span>
-                Description: <span *ngIf="!editingZoneInfo">{{selectedZone.description}}</span><input matInput *ngIf="editingZoneInfo" [(ngModel)]="selectedZone.description" /><br/>
-                RPi Board Pin Number: <span *ngIf="!editingZoneInfo">{{selectedZone.pinNum}}</span><input matInput *ngIf="editingZoneInfo" [(ngModel)]="selectedZone.pinNum" /><br/>
+                <span>RPi Board Pin Number: <span *ngIf="!editingZonePin">{{selectedZone.pinNum}}</span><input matInput *ngIf="editingZonePin" [(ngModel)]="selectedZone.pinNum" />
+                    <button *ngIf="!editingZonePin" mat-icon-button (click)="editZonePin()" color="primary">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button *ngIf="editingZonePin" mat-icon-button (click)="saveZonePin()" color="primary">
+                        <mat-icon>save</mat-icon> Save
+                    </button>
+                    <button *ngIf="editingZonePin" mat-icon-button (click)="cancelZonePin()" color="warn">
+                        <mat-icon>close</mat-icon> Cancel
+                    </button>
+                </span><br/>
+                Zone Id: {{ selectedZone.id }}<br/>
+                Expected State: {{ selectedZone.expectedState }}<br/>
             </div>
             <div class="select-program">
                 <mat-label>Program: </mat-label>
@@ -58,13 +69,13 @@
             <div class="program-details">
                 <div *ngIf="selectedZone.program === 'timer'">
                     <span class="heading">Timer Schedule 
-                        <button *ngIf="!editingZoneSchedule" mat-icon-button (click)="editZoneSchedule()">
+                        <button *ngIf="!editingZoneSchedule" mat-icon-button (click)="editZoneSchedule()" color="primary">
                             <mat-icon>edit</mat-icon>
                         </button>
-                        <button *ngIf="editingZoneSchedule" mat-button (click)="saveZoneSchedule()">
+                        <button *ngIf="editingZoneSchedule" mat-icon-button (click)="saveZoneSchedule()" color="primary">
                             <mat-icon>save</mat-icon> Save
                         </button>
-                        <button *ngIf="editingZoneSchedule" mat-button (click)="cancelZoneSchedule()">
+                        <button *ngIf="editingZoneSchedule" mat-icon-button (click)="cancelZoneSchedule()" color="warn">
                             <mat-icon>close</mat-icon> Cancel
                         </button>
                     </span>
@@ -75,6 +86,7 @@
                 <div *ngIf="selectedZone.program === 'manual'">
                     <section class="example-section">
                         <mat-slide-toggle
+                            color="primary"
                             (change)="toggle($event)"
                             [checked]="selectedZone.state == 'on'">
                             {{ selectedZone.state == 'on' ? "Turn Off" : "Turn On" }}
