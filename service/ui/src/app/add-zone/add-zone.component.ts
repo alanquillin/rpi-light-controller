@@ -15,10 +15,12 @@ export class AddZoneComponent {
   programs = ["timer", "manual", "off"]
   processing = false
 
+  timeValidators =[Validators.required, Validators.pattern("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$"), Validators.minLength(8), Validators.maxLength(8)]
+
   addZoneFormGroup: FormGroup = new FormGroup({
     description: new FormControl('', [Validators.required]),
-    on: new FormControl('', [Validators.required]),
-    off: new FormControl('', [Validators.required]),
+    on: new FormControl('', this.timeValidators),
+    off: new FormControl('', this.timeValidators),
     pinNum: new FormControl('', [Validators.required]),
     program: new FormControl('', [Validators.required]),
   });
@@ -26,9 +28,7 @@ export class AddZoneComponent {
   zone: Zone = new Zone;
   constructor(private dataService: DataService, private router: Router) {}
 
-  ngOnInit() {
-      this.zone.state = "off";
-  }
+  ngOnInit() {}
 
   submit(): void {
     if (this.zone) {

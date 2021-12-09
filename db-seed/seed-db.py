@@ -11,6 +11,8 @@ from lib.util import random_string
 from lib.config import Config
 from db import (
     Base,
+    devices,
+    device_zones,
     session_scope,
     zones
 )
@@ -21,10 +23,61 @@ ZONES = [
         "id": 1,
         "description": "Zone 1",
         "program": "timer",
-        "state": "off",
-        "pin_num": 1,
+        "pin_num": 11,
         "on": "17:00:00",
         "off": "23:59:59"
+    },{
+        "id": 2,
+        "description": "Zone 2",
+        "program": "Manual",
+        "manual_state": "om",
+        "pin_num": 12,
+        "on": "17:00:00",
+        "off": "23:59:59"
+    }
+]
+
+DEVICES = [
+    {
+        "id": 1,
+        "description": "Device 1",
+        "manufacturer_id": "abc123",
+        "manufacturer": "particle",
+        "model": "photon"
+    },
+    {
+        "id": 2,
+        "description": "Device 2",
+        "manufacturer_id": "abc456",
+        "manufacturer": "particle",
+        "model": "photon"
+    }
+]
+
+DEVICE_ZONES = [
+    {
+        "id": 1,
+        "device_id": 1,
+        "zone_id": 1,
+        "pin_num": 1
+    },
+    {
+        "id": 2,
+        "device_id": 1,
+        "zone_id": 1,
+        "pin_num": 2
+    },
+    {
+        "id": 3,
+        "device_id": 1,
+        "zone_id": 2,
+        "pin_num": 3
+    },
+    {
+        "id": 4,
+        "device_id": 2,
+        "zone_id": 1,
+        "pin_num": 4
     }
 ]
 
@@ -84,3 +137,5 @@ if __name__ == "__main__":
         Base.metadata.create_all(db_session.get_bind())
 
         seed_db(db_session, zones.Zones, ZONES)
+        seed_db(db_session, devices.Devices, DEVICES)
+        seed_db(db_session, device_zones.DeviceZones, DEVICE_ZONES)

@@ -4,8 +4,7 @@ from resources import BaseResource, ResourceMixinBase
 from db import session_scope
 from db.zones import Zones as ZonesDB
 from lib.rpi import RPi
-from lib import zones as zoneLib
-from lib.zones import PROGRAM_MANUAL
+from lib.zones import PROGRAM_MANUAL, PROGRAM_TIMER, STATE_OFF, STATE_ON, calc_timer_state
 
 class ZoneResourceMixin(ResourceMixinBase):
     def __init__(self):
@@ -13,22 +12,21 @@ class ZoneResourceMixin(ResourceMixinBase):
         self.gpio = RPi()
 
     def transform_state(self, state):
-        return zoneLib.STATE_ON if state else zoneLib.STATE_OFF
+        return STATE_ON if state else STATE_OFF
         
     def transform_response(self, zone, **kwargs):
         data = zone.to_dict()
-        manual_state = data.pop("manual_state")
 
+        manual_state = data.pop("manual_state")
         data["state"] = self.transform_state(self.gpio.get(zone))
         
-        expected_state = zoneLib.STATE_OFF
-        if zone.program == zoneLib.PROGRAM_TIMER:
-            expected_state = zoneLib.calc_timer_state(zone)
-        elif zone.program == zoneLib.PROGRAM_MANUAL:
+        expected_state = STATE_OFF
+        if zone.program == PROGRAM_TIMER:
+            expected_state = self.transform_state(calc_timer_state(zone))
+        elif zone.program == PROGRAM_MANUAL:
             expected_state = manual_state
         
         data["expected_state"] = expected_state
-
         return super().transform_response(data, **kwargs)
 
 class Zones(BaseResource, ZoneResourceMixin):
@@ -108,4 +106,11 @@ class ZoneState(BaseResource, ZoneResourceMixin):
             zone = ZonesDB.get_by_pkey(db_session, zone_id)
             
             self.gpio.set(zone, True if state.lower() == 'on' else False)
+            
+            if zone.program == PROGRAM_MANUAL:
+                manual_state = self.transform_state(state.lower() == 'on')
+                self.logger.debug("Zone %s is in %s mode.  Setting the manual_state to %s", zone_id, zone.program, manual_state)
+                ZonesDB.update(db_session, zone_id, manual_state=manual_state)
+                zone = ZonesDB.get_by_pkey(db_session, zone_id)
+
             return self.transform_response(zone)

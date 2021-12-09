@@ -6,6 +6,9 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import {
+  Device,
+  DeviceZones,
+  ZoneDevices,
   Zone,
 } from './models/models';
 import { HttpClient } from '@angular/common/http';
@@ -56,6 +59,11 @@ export class DataService {
     return this.http.get<Zone>(url).pipe(catchError(this.getError));
   }
 
+  getZoneDevices(zoneId: number): Observable<ZoneDevices[]> {
+    const url = `${this.baseUrl}/zones/${zoneId}/devices`;
+    return this.http.get<ZoneDevices[]>(url).pipe(catchError(this.getError));
+  }
+
   deleteZone(zoneId: number): Observable<any> {
     const url = `${this.baseUrl}/zones/${zoneId}`;
     return this.http.delete<any>(url).pipe(catchError(this.getError));
@@ -79,5 +87,30 @@ export class DataService {
   addZone(zone: Zone): Observable<Zone> {
     const url = `${this.baseUrl}/zones`;
     return this.http.post<Zone>(url, zone).pipe(catchError(this.getError));
+  }
+
+  getDevices(): Observable<Device[]> {
+    const url = `${this.baseUrl}/devices`;
+    return this.http.get<Device[]>(url).pipe(catchError(this.getError));
+  }
+
+  getDevice(deviceId: number): Observable<Device> {
+    const url = `${this.baseUrl}/devices/${deviceId}`;
+    return this.http.get<Device>(url).pipe(catchError(this.getError));
+  }
+
+  getDevicesZones(deviceId: number): Observable<DeviceZones[]> {
+    const url = `${this.baseUrl}/devices/${deviceId}/zones`;
+    return this.http.get<DeviceZones[]>(url).pipe(catchError(this.getError));
+  }
+
+  deleteDeviceZoneMapping(deviceId: number, zoneId: number, pinNum: number): Observable<any> {
+    const url = `${this.baseUrl}/devices/${deviceId}/zones/${zoneId}/pins/${pinNum}`;
+    return this.http.delete<any>(url).pipe(catchError(this.getError));
+  }
+
+  addDeviceZoneMapping(zoneId: number, deviceId: number, pinNum: number): Observable<any> {
+    const url = `${this.baseUrl}/zones/${zoneId}/devices`;
+    return this.http.post<any>(url, {deviceId: deviceId, pinNum: pinNum}).pipe(catchError(this.getError));
   }
 }

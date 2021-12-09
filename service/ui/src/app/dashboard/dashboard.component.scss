@@ -17,18 +17,13 @@ button.zone-picker {
     padding: 5px 0px;
 }
 
-.heading {
-    font-size: 140%;
-    display: block;
-}
-
-.heading button {
-    margin: 0px 4px;
-}
-
 .select-program {
     display: block;
     padding: 1em 0;
+}
+
+.program-selector {
+    line-height: 32px !important;
 }
 
 .program-details {
@@ -45,4 +40,53 @@ button.zone-picker {
 
 .mat-simple-snackbar-action {
     color: red !important;
+}
+
+.device-mapping {
+    display: inline-block;
+}
+
+.device-pin-list {
+    display: inline-block;
+}
+
+
+fieldset.add-device {
+    border: none;
+}
+
+.add-device-field {
+    margin-right: 12px;
+}
+
+.add-device-submit {
+    display: inline-block;
+}
+
+.add-device-submit button {
+    display: inline-flex;
+    align-items: center; 
+    //padding: 6px;
+}
+
+#add_device_pinNum_form_field,
+#edit-system-pin-number-fom-field {
+    width: 100px;
+}
+
+#edit-description-dform-field {
+    width: 250px;
+}
+
+.inline-zone-editor-action {
+    height:20px !important;
+    width:20px !important;
+    font-size:20px !important;
+    line-height: 20px !important;
+}
+.inline-zone-editor-action .mat-icon{
+    height:20px !important;
+    width:20px !important;
+    font-size:20px !important;
+    line-height: 20px !important;
 }

@@ -1,112 +1,6 @@
 @use '~@angular/material' as mat;
-@import 'styles/components/app';
 
 @include mat.core();
-$immuta-primary: (
-    50 : #eeeaf7,
-    100 : #d5caeb,
-    200 : #b9a6de,
-    300 : #9d82d0,
-    400 : #8868c6,
-    500 : #734dbc,
-    600 : #6b46b6,
-    700 : #603dad,
-    800 : #5634a5,
-    900 : #432597,
-    A100 : #dfd5ff,
-    A200 : #b9a2ff,
-    A400 : #926fff,
-    A700 : #7f56ff,
-    contrast: (
-        50 : #000000,
-        100 : #000000,
-        200 : #000000,
-        300 : #000000,
-        400 : #ffffff,
-        500 : #ffffff,
-        600 : #ffffff,
-        700 : #ffffff,
-        800 : #ffffff,
-        900 : #ffffff,
-        A100 : #000000,
-        A200 : #000000,
-        A400 : #000000,
-        A700 : #ffffff,
-    )
-);
-
-$immuta-warn: (
-    50 : #fbe8ea,
-    100 : #f5c5cb,
-    200 : #ef9ea8,
-    300 : #e87785,
-    400 : #e3596b,
-    500 : #de3c51,
-    600 : #da364a,
-    700 : #d52e40,
-    800 : #d12737,
-    900 : #c81a27,
-    A100 : #fffcfd,
-    A200 : #ffc9cd,
-    A400 : #ff969d,
-    A700 : #ff7d85,
-    contrast: (
-        50 : #000000,
-        100 : #000000,
-        200 : #000000,
-        300 : #000000,
-        400 : #000000,
-        500 : #ffffff,
-        600 : #ffffff,
-        700 : #ffffff,
-        800 : #ffffff,
-        900 : #ffffff,
-        A100 : #000000,
-        A200 : #000000,
-        A400 : #000000,
-        A700 : #000000,
-    )
-);
-
-$immuta-accent: (
-    50 : #e3fcf7,
-    100 : #b8f6eb,
-    200 : #89f1dd,
-    300 : #59ebcf,
-    400 : #36e6c5,
-    500 : #12e2bb,
-    600 : #10dfb5,
-    700 : #0ddaac,
-    800 : #0ad6a4,
-    900 : #05cf96,
-    A100 : #f7fffd,
-    A200 : #c4ffec,
-    A400 : #91ffdc,
-    A700 : #78ffd4,
-    contrast: (
-        50 : #000000,
-        100 : #000000,
-        200 : #000000,
-        300 : #000000,
-        400 : #000000,
-        500 : #000000,
-        600 : #000000,
-        700 : #000000,
-        800 : #000000,
-        900 : #000000,
-        A100 : #000000,
-        A200 : #000000,
-        A400 : #000000,
-        A700 : #000000,
-    )
-);
-
-$immuta-app-primary: mat.define-palette($immuta-primary);
-$immuta-app-accent:  mat.define-palette($immuta-accent);
-$immuta-app-warn:    mat.define-palette($immuta-warn);
-$immuta-app-theme: mat.define-light-theme($immuta-app-primary, $immuta-app-accent, $immuta-app-warn);
-@include mat.all-component-themes($immuta-app-theme);
-
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
@@ -171,10 +65,24 @@ label {
     padding: 1em;
 }
 
+.heading {
+    font-size: 140%;
+    display: block;
+}
+
+.heading button {
+    margin: 0px 4px;
+}
+
 .footer {
     padding: 1em;
     background: #111;
     position: fixed;
     bottom: 0;
     width: 100%;
+}
+
+.mat-button-toggle-checked {
+    background-color: #673ab7 !important;
+    color: white !important;
 }

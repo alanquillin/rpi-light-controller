@@ -25,6 +25,8 @@ from werkzeug.wrappers.base_response import BaseResponse
 from lib.config import Config
 from lib import json, logging
 from lib import zones as zoneLib
+from resources.devices import Device, Devices
+from resources.device_zones import DeviceZone, DeviceZones, ZoneDevice, ZoneDevices, DeviceZonePin
 from resources.zones import Zone, Zones, ZoneState
 
 
@@ -75,8 +77,15 @@ def health():
 
 
 # API resources:
+api.add_resource(Devices, "/devices")
+api.add_resource(Device, "/devices/<device_id>")
+api.add_resource(DeviceZones, "/devices/<device_id>/zones")
+api.add_resource(DeviceZone, "/devices/<device_id>/zones/<zone_id>")
+api.add_resource(DeviceZonePin, "/devices/<device_id>/zones/<zone_id>/pins/<pin_num>")
 api.add_resource(Zones, "/zones")
 api.add_resource(Zone, "/zones/<zone_id>")
+api.add_resource(ZoneDevices, "/zones/<zone_id>/devices")
+api.add_resource(ZoneDevice, "/zones/<zone_id>/devices/<device_id>")
 api.add_resource(ZoneState, "/zones/<zone_id>/<state>")
 
 app.wsgi_app = ProxyFix(app.wsgi_app)

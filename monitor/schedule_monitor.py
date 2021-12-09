@@ -151,24 +151,18 @@ if __name__ == '__main__':
             zones = get_zones()
 
             for zone in zones:
+                zone_num = zone['id']
+
                 if zone['program'] != SYSTEM_PROGRAM_TIMER:
-                    LOG.debug("Zone %s has program set to %s, skipping", zone["id"], zone["program"])
+                    LOG.debug("Zone %s has program set to %s, skipping", zone_num, zone["program"])
                     continue
                 
-                zone_num = zone['id']
-                now = time.localtime()
-                start = get_time(zone['on'])
-                end = get_time(zone['off'])
+                state = zone["state"].lower()
+                expected_state = zone.get("expectedState", "").lower()
 
-                LOG.debug('Zone %s - on: %s, off: %s, now: %s', zone_num, time.strftime(DB_DATE_FORMAT, start), time.strftime(DB_DATE_FORMAT, end), time.strftime(DB_DATE_FORMAT, now))
-                
-                turn_on = start < now < end
-                if start > end:
-                    LOG.debug("End time is earlier that start time... redoing check.")
-                    turn_on = now < end or now > start
-                    
+                LOG.debug("Checking zone %s state:  Current = %s, Expected = %s", zone_num, state, expected_state)
 
-                if turn_on:
+                if expected_state == "on":
                     LOG.debug('Turning lights for zone %s on' % zone_num)
                     turn_zone_on(zone_num)
                 else:

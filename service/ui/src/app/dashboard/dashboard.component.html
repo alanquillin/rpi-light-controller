@@ -3,17 +3,17 @@
         <a class="title" href="/">RPI Light Controller</a>
         
         <div class="menus">
-            <button mat-icon-button [matMenuTriggerFor]="zonePicker" class="zone-picker">
-                {{selectedZone ? "Zone " + selectedZone.id + ": " + selectedZone.description : "Select Zone"}}
+            <button mat-button [matMenuTriggerFor]="zonePicker" class="zone-picker">
+                {{selectedZone ? selectedZone.description : "Select Zone"}} <mat-icon>arrow_drop_down</mat-icon>
             </button>
             <mat-menu #zonePicker="matMenu">
                 <button mat-menu-item *ngFor="let zone of zones"
-                        (click)="selectZone(zone)">
-                    Zone {{zone.id}}: {{ zone.description }}
+                        (click)="selectZone(zone.id)">
+                    {{ zone.description }}
                 </button>
             </mat-menu>
 
-            <button mat-icon-button [matMenuTriggerFor]="menu">
+            <button mat-mini-fab [matMenuTriggerFor]="menu">
                 <mat-icon>menu</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
@@ -32,29 +32,43 @@
     <div *ngIf="!loading">
         <div *ngIf="selectedZone">
             <div class="zone-info">
-                <span class="heading"><span *ngIf="!editingZoneInfo">{{selectedZone.description}}</span><input matInput *ngIf="editingZoneInfo" [(ngModel)]="selectedZone.description" />
-                    <button *ngIf="!editingZoneInfo" mat-icon-button (click)="editZoneInfo()" color="primary" aria-label="Edit the zone name/description">
+                <span class="heading edit-description">
+                    <span *ngIf="!editingZoneInfo">{{selectedZone.description}}</span>
+                    <span *ngIf="editingZoneInfo">
+                        <mat-form-field id="edit-description-dform-field" appearance="fill">
+                            <input class="dp-textfield--input" matInput [(ngModel)]="selectedZone.description" />
+                            <mat-label>Edit Zone Description</mat-label>
+                        </mat-form-field>
+                    </span>
+                    <button class="inline-zone-editor-action" *ngIf="!editingZoneInfo" mat-icon-button (click)="editZoneInfo()" color="primary" aria-label="Edit the zone name/description">
                         <mat-icon>edit</mat-icon>
                     </button>
-                    <button *ngIf="!editingZoneInfo" mat-icon-button (click)="deleteZone()" color="warn" aria-label="Delete Zone">
+                    <button class="inline-zone-editor-action" *ngIf="!editingZoneInfo" mat-icon-button (click)="deleteZone()" color="warn" aria-label="Delete Zone">
                         <mat-icon>delete</mat-icon>
                     </button>
-                    <button *ngIf="editingZoneInfo" mat-icon-button (click)="saveZoneInfo()" color="primary" aria-label="">
-                        <mat-icon>save</mat-icon> Save
+                    <button class="inline-zone-editor-action" *ngIf="editingZoneInfo" mat-icon-button (click)="saveZoneInfo()" color="primary" aria-label="save">
+                        <mat-icon>save</mat-icon>
                     </button>
-                    <button *ngIf="editingZoneInfo" mat-icon-button (click)="cancelZoneInfo()" color="warn">
-                        <mat-icon>close</mat-icon> Cancel
+                    <button class="inline-zone-editor-action" *ngIf="editingZoneInfo" mat-icon-button (click)="cancelZoneInfo()" color="warn" aria-label="cancel">
+                        <mat-icon>close</mat-icon>
                     </button>
                 </span>
-                <span>RPi Board Pin Number: <span *ngIf="!editingZonePin">{{selectedZone.pinNum}}</span><input matInput *ngIf="editingZonePin" [(ngModel)]="selectedZone.pinNum" />
-                    <button *ngIf="!editingZonePin" mat-icon-button (click)="editZonePin()" color="primary">
+                <span>
+                    RPi Board Pin Number: <span *ngIf="!editingZonePin">{{selectedZone.pinNum}}</span>
+                    <span *ngIf="editingZonePin">
+                        <mat-form-field id="edit-system-pin-number-fom-field" appearance="fill">
+                            <input matInput class="dp-textfield--input" [(ngModel)]="selectedZone.pinNum" type="number" />
+                            <mat-label>Edit Pin</mat-label>
+                        </mat-form-field>
+                    </span>
+                    <button class="inline-zone-editor-action" *ngIf="!editingZonePin" mat-icon-button (click)="editZonePin()" color="primary" aria-label="Edit the zone control pin number">
                         <mat-icon>edit</mat-icon>
                     </button>
-                    <button *ngIf="editingZonePin" mat-icon-button (click)="saveZonePin()" color="primary">
-                        <mat-icon>save</mat-icon> Save
+                    <button class="inline-zone-editor-action" *ngIf="editingZonePin" mat-icon-button (click)="saveZonePin()" color="primary" aria-label="save">
+                        <mat-icon>save</mat-icon>
                     </button>
-                    <button *ngIf="editingZonePin" mat-icon-button (click)="cancelZonePin()" color="warn">
-                        <mat-icon>close</mat-icon> Cancel
+                    <button class="inline-zone-editor-action" *ngIf="editingZonePin" mat-icon-button (click)="cancelZonePin()" color="warn" aria-label="cancel">
+                        <mat-icon>close</mat-icon>
                     </button>
                 </span><br/>
                 Zone Id: {{ selectedZone.id }}<br/>
@@ -63,25 +77,37 @@
             <div class="select-program">
                 <mat-label>Program: </mat-label>
                 <mat-button-toggle-group [(value)] = "selectedZone.program" (change)="programChange($event)" name="fontStyle" aria-label="Font Style" >
-                    <mat-button-toggle  *ngFor="let program of programs;" [value]="program">{{program}}</mat-button-toggle>
+                    <mat-button-toggle class="program-selector" *ngFor="let program of programs;" [value]="program">{{program}}</mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
             <div class="program-details">
                 <div *ngIf="selectedZone.program === 'timer'">
                     <span class="heading">Timer Schedule 
-                        <button *ngIf="!editingZoneSchedule" mat-icon-button (click)="editZoneSchedule()" color="primary">
+                        <button class="inline-zone-editor-action" *ngIf="!editingZoneSchedule" mat-icon-button (click)="editZoneSchedule()" color="primary">
                             <mat-icon>edit</mat-icon>
                         </button>
-                        <button *ngIf="editingZoneSchedule" mat-icon-button (click)="saveZoneSchedule()" color="primary">
-                            <mat-icon>save</mat-icon> Save
+                        <button class="inline-zone-editor-action" *ngIf="editingZoneSchedule" mat-icon-button (click)="saveZoneSchedule()" color="primary">
+                            <mat-icon>save</mat-icon>
                         </button>
-                        <button *ngIf="editingZoneSchedule" mat-icon-button (click)="cancelZoneSchedule()" color="warn">
-                            <mat-icon>close</mat-icon> Cancel
+                        <button class="inline-zone-editor-action" *ngIf="editingZoneSchedule" mat-icon-button (click)="cancelZoneSchedule()" color="warn">
+                            <mat-icon>close</mat-icon>
                         </button>
                     </span>
                     State: {{selectedZone.state}}<br/>
-                    On: <span *ngIf="!editingZoneSchedule">{{selectedZone.on}}</span><input matInput *ngIf="editingZoneSchedule" [(ngModel)]="selectedZone.on" /><br/>
-                    Off: <span *ngIf="!editingZoneSchedule">{{selectedZone.off}}</span><input matInput *ngIf="editingZoneSchedule" [(ngModel)]="selectedZone.off" /><br/>
+                    On: <span *ngIf="!editingZoneSchedule">{{selectedZone.on}}</span>
+                    <span *ngIf="editingZoneSchedule">
+                        <mat-form-field appearance="fill">
+                            <input matInput class="dp-textfield--input" [(ngModel)]="selectedZone.on" />
+                            <mat-label>Edit Lights On Time</mat-label>
+                        </mat-form-field>
+                    </span><br/>
+                    Off: <span *ngIf="!editingZoneSchedule">{{selectedZone.off}}</span>
+                    <span *ngIf="editingZoneSchedule">
+                        <mat-form-field appearance="fill">
+                            <input matInput class="dp-textfield--input" [(ngModel)]="selectedZone.off" />
+                            <mat-label>Edit Lights Off Time</mat-label>
+                        </mat-form-field>
+                    </span><br/>
                 </div>
                 <div *ngIf="selectedZone.program === 'manual'">
                     <section class="example-section">
@@ -93,6 +119,64 @@
                         </mat-slide-toggle>
                     </section>
                 </div>
+            </div>
+            <div class="zone-devices">
+                <span class="heading">Devices</span>
+                <mat-list>
+                    <mat-list-item *ngFor="let dz of selectedZoneDevices">
+                        <div class="device-mapping">{{ getDeviceDescription(dz.deviceId) }}
+                            <mat-chip-list cdkDropListOrientation="horizontal" class="device-pin-list">
+                                <mat-chip
+                                    color="primary"
+                                    *ngFor="let pinNum of dz.pinNums"
+                                    (removed)="removeDeviceMapping(dz.deviceId, pinNum)">
+                                    Pin: {{pinNum}}
+                                    <button matChipRemove>
+                                        <mat-icon>cancel</mat-icon>
+                                    </button>
+                                </mat-chip>
+                            </mat-chip-list>
+                        </div>
+                    </mat-list-item>
+                </mat-list>
+                <form [formGroup]="addDeviceMappingFormGroup" (ngSubmit)="addDeviceMap()">
+                    <fieldset class="add-device">
+                        <mat-form-field appearance="fill" class="add-device-field">
+                            <mat-select
+                                class="mat-select"
+                                formControlName="deviceId"
+                                [(ngModel)]="newDeviceMapping.deviceId"
+                                matInput
+                                required>
+                                <mat-option *ngFor="let device of devices" [value]="device.id">
+                                {{ getDeviceDescription(device.id) }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-label *ngIf="!addDeviceMappingForm.deviceId.disabled">Device Id</mat-label>
+                        </mat-form-field>
+            
+                        <mat-form-field appearance="fill" class="add-device-field" id="add_device_pinNum_form_field">
+                            <input id="add_device_pinNum_input"
+                                class="dp-textfield--input"
+                                formControlName="pinNum"
+                                [(ngModel)]="newDeviceMapping.pinNum"
+                                matInput
+                                required
+                                type="number"
+                                matTooltip="The control pin number on the device" />
+                            <mat-label *ngIf="!addDeviceMappingForm.pinNum.disabled">Pin Number</mat-label>
+                        </mat-form-field>
+                    
+                        <div class="add-device-field add-device-submit">
+                            <button id="add_device_submit"
+                                [disabled]="!addDeviceMappingFormGroup.valid"
+                                mat-raised-button
+                                color="primary">
+                                <mat-icon>add</mat-icon> Add
+                            </button>
+                        </div>
+                    </fieldset>
+                </form>
             </div>
         </div>
     </div>

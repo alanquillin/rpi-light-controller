@@ -21,6 +21,8 @@ from lib import json
 Base = declarative_base()
 
 __all__ = [
+    "device_zones",
+    "devices",
     "zones"
 ]
 

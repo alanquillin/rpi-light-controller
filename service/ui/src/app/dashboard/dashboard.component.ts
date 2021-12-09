@@ -2,20 +2,24 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { Component } from '@angular/core';
 import { DataService } from './../data.service';
-import { Zone } from './../models/models';
+import { Device, Zone, ZoneDevices, DeviceToZoneMap } from './../models/models';
+import { FormGroup, Validators, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
+
+
 export class DashboardComponent {
   title = 'rpi-lts-ctrl';
 
   constructor(private dataService: DataService, private _snackBar: MatSnackBar) {}
-
+  
   zones: Zone[] = [];
   selectedZone: Zone | undefined;  //used for binding and UX conditionals
+  selectedZoneId: number | undefined;
   selectedZoneOriginal: Zone | undefined;  // used for resetting incase the binding succeeds up a service update fails (i.e. the web server is down)
   loading = true;
   programs = ["timer", "manual", "off"]
@@ -23,20 +27,33 @@ export class DashboardComponent {
   editingZonePin = false;
   editingZoneSchedule = false;
   editTimer = false;
+  devices: Device[] = [];
+
+  selectedZoneDevices: ZoneDevices[] = [];
+
+  newDeviceMapping: DeviceToZoneMap = new DeviceToZoneMap;
+  addDeviceMappingFormGroup: FormGroup = new FormGroup({
+    deviceId: new FormControl('', [Validators.required]),
+    pinNum: new FormControl('', [Validators.required]),
+  });
+
+  get addDeviceMappingForm() {
+    return this.addDeviceMappingFormGroup.controls;
+  }
 
   displayError(errMsg: string) {
     this._snackBar.open("Error: " + errMsg, "Close");
   }
 
-  getZones() {
-    return this.dataService.getZones();
+  selectZone(zoneId: number | undefined) {
+    this.selectedZoneId = zoneId;
+    if (!zoneId) {
+      return;
+    }
+    this.refreshSelectedZone();
   }
 
-  getZone(id: number) {
-    return this.dataService.getZone(id);
-  }
-
-  setSelectZone(zone: Zone | undefined) {
+  setSelectZone(zone?: Zone) {
     this.selectedZone = zone;
     this.selectedZoneOriginal = zone;
   }
@@ -45,8 +62,18 @@ export class DashboardComponent {
     this.selectedZone = this.selectedZoneOriginal;
   }
 
+  getDeviceDescription(deviceId: number){
+    let device = this.devices.find(d => d.id === deviceId);
+
+    if (!device) {
+      return "UNKNOWN"
+    }
+
+    return `${device.description} (${device.manufacturer}: ${device.model})`;
+  }
+
   refreshZones(next?: () => void, onError?: () => void) {
-    this.getZones().subscribe((zones: any) => {
+    this.dataService.getZones().subscribe((zones: any) => {
       if (zones) {
         this.zones = zones;
         if(zones.length === 1){
@@ -64,29 +91,69 @@ export class DashboardComponent {
     });
   }
 
-  refreshSelectedZone(id: number, next?: () => void, onError?: () => void) {
-    console.log("refreshing selected zone data")
-    this.getZone(id).subscribe((zone: any) => {
-      if (zone) {
-        console.log("yay zone found")
-        this.setSelectZone(zone);
+  refreshDevices(next?: () => void, onError?: () => void) {
+    this.dataService.getDevices().subscribe((devices: any) => {
+      if (devices) {
+        this.devices = devices;
       }
       if (next) {
-        console.log("calling next function")
         next();
       }
     }, (err: any) => {
-      this.displayError("There was an error trying to retrieve data for Zone " + id);
+      this.displayError("There was an error trying to retrieve the list of devices");
       if (onError) {
         onError();
       }
     });
   }
 
+  refreshSelectedZone(next?: () => void, onError?: () => void) {
+    console.log("refreshing selected zone data");
+    if (!this.selectedZoneId) {
+      return;
+    }
+
+    this.dataService.getZone(this.selectedZoneId).subscribe((zone: any) => {
+      if (zone) {
+        console.log("yay zone found")
+        this.setSelectZone(zone);
+        this.refreshSelectZoneDevices(next, onError);
+      } else if (next) {
+        next();
+      }
+    }, (err: any) => {
+      this.displayError("There was an error trying to retrieve data for Zone " + this.selectedZoneId);
+      if (onError) {
+        onError();
+      }
+    });
+  }
+
+  refreshSelectZoneDevices(next?: () => void, onError?: () => void) {
+    if (!this.selectedZoneId) {
+      return;
+    }
+    this.dataService.getZoneDevices(this.selectedZoneId).subscribe((dzs: ZoneDevices[]) => {
+      this.selectedZoneDevices = dzs
+      if (next) {
+        next();
+      }
+    }, (err: any) => {
+      this.selectedZoneDevices = [];
+      this.displayError("There was an error trying to retrieve devices for Zone " + this.selectedZoneId);
+      if (onError) {
+        onError();
+      }
+    })
+  } 
+
   ngOnInit() {
     this.loading = true;
     this.refreshZones(() => {
-      this.loading = false;
+      this.refreshDevices(() => {
+        this.loading = false;
+        this.addDeviceMappingFormGroup.reset();
+      });
     });
   }
 
@@ -129,14 +196,11 @@ export class DashboardComponent {
     }
   }
 
-  selectZone(zone: Zone | undefined) {
-    this.selectedZone = zone;
-  }
-
   deleteZone() {
     if (this.selectedZone && this.selectedZone.id) {
       if(confirm("Are you sure you want to delete Zone " + this.selectedZone.id + " (" + this.selectedZone.description + ")")) {
         this.dataService.deleteZone(this.selectedZone.id).subscribe(() => {
+          this.selectedZoneId = undefined;
           this.setSelectZone(undefined);
           this.refreshZones();
         }, (err: any) => {
@@ -170,7 +234,7 @@ export class DashboardComponent {
 
   cancelZoneInfo() {
     if (this.selectedZone && this.selectedZone.id) {
-      this.refreshSelectedZone(this.selectedZone.id, () => {
+      this.refreshSelectedZone(() => {
         this.resetSelectZone();
         this.editingZoneInfo = false;
       }, () => {
@@ -206,7 +270,7 @@ export class DashboardComponent {
 
   cancelZonePin() {
     if (this.selectedZone && this.selectedZone.id) {
-      this.refreshSelectedZone(this.selectedZone.id, () => {
+      this.refreshSelectedZone(() => {
         this.resetSelectZone();
         this.editingZonePin = false;
       }, () => {
@@ -241,7 +305,7 @@ export class DashboardComponent {
 
   cancelZoneSchedule() {
     if (this.selectedZone && this.selectedZone.id) {
-      this.refreshSelectedZone(this.selectedZone.id, () => {
+      this.refreshSelectedZone(() => {
         this.resetSelectZone();
         this.editingZoneSchedule = false;
       }, () => {
@@ -251,6 +315,44 @@ export class DashboardComponent {
     } else {
       this.editingZoneSchedule = false;
     }
+  }
+
+  removeDeviceMapping(deviceId: number, pinNum: number) {
+    if(!this.selectedZoneId) {
+      return;
+    }
+
+    if(confirm(`Are you sure you want to remove "${this.getDeviceDescription(deviceId)}" device for pin ${pinNum}`)) {
+      this.dataService.deleteDeviceZoneMapping(deviceId, this.selectedZoneId, pinNum).subscribe(() => {
+        this.refreshSelectZoneDevices();
+      }, (err: any) => {
+        this.displayError("There was an error trying to remove the device from zone");
+      });
+    }
+  }
+
+  addDeviceMap(): void {
+    if (!this.newDeviceMapping || !this.newDeviceMapping.deviceId || !this.newDeviceMapping.pinNum) {
+      console.log("new device map object is empty... skipping")
+      return;
+    }
+
+    if (!this.addDeviceMappingFormGroup.valid) {
+      console.log("add device form is not valid")
+      return;
+    }
+
+    if (!this.selectedZoneId) {
+      console.log("no selected zone id");
+      return;
+    }
+
+    this.dataService.addDeviceZoneMapping(this.selectedZoneId, this.newDeviceMapping.deviceId, this.newDeviceMapping.pinNum).subscribe(() => {
+        this.addDeviceMappingFormGroup.reset();
+        this.refreshSelectZoneDevices();
+    }, (err: any) => {
+      this.displayError("There was an error trying to add device to zone");
+    });
   }
 }
 
