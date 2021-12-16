@@ -8,6 +8,7 @@ services:
       - 5000:5000
     env_file:
       - ./docker-local.env
+      - .env
     depends_on:
       - postgres
       - db-data-seed
@@ -25,6 +26,7 @@ services:
       - web
     env_file:
       - ./docker-local.env
+      - .env
     networks:
       - rpi-lts-ctrl-net
     volumes:
@@ -39,12 +41,14 @@ services:
       - rpi-lts-ctrl-net
     env_file:
       - ./docker-local.env
+      - .env
   db-data-seed:
     image: rpi-lts-ctrl-db-seed:dev
     depends_on:
       - postgres
     env_file:
       - ./docker-local.env
+      - .env
     networks:
       - rpi-lts-ctrl-net
 networks:

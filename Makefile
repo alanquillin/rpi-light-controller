@@ -33,6 +33,16 @@ REPOSITORY_IMAGE_BASE ?= rpi-lights-controller
 REPOSITORY_IMAGE_SERVICE ?= $(REPOSITORY_IMAGE_BASE)-service
 REPOSITORY_IMAGE_MONITOR ?= $(REPOSITORY_IMAGE_BASE)-monitor
 
+ifneq ("$(wildcard .env)","")
+    include .env
+	export $(shell sed 's/=.*//' .env)
+endif
+
+ifeq ("$(wildcard deploy/local-dev/.env)","")
+    $(shell touch deploy/local-dev/.env)
+endif
+
+
 .PHONY: build build-dev docker-build format-py test run-rpi run-dev clean \
 		test-sec lint-py lint-ts depends test-depends update-depends \
 		build-db-seed rebuild-db-seed
