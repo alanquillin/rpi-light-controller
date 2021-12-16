@@ -1,8 +1,7 @@
 /*
  * Project rpi-lts-ctl
- * Description:
- * Author:
- * Date:
+ * Description: Remote replay devices for the RPi Light Controller
+ * Author: Alan Quillin
  */
 
 #include <ArduinoJson.h>
