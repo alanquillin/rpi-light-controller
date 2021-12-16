@@ -3,7 +3,7 @@
 /******************************************************/
 
 #include "Particle.h"
-#line 1 "/Users/aquillin/Workspace/Personal/rpi-light-controller/devices/particle/rpi-lts-ctl/src/rpi-lts-ctl.ino"
+#line 1 "/Users/aquillin/Workspace/Personal/rpi-light-controller/devices/particle/src/rpi-lts-ctl.ino"
 /*
  * Project rpi-lts-ctl
  * Description:
@@ -22,10 +22,12 @@ bool ping();
 DynamicJsonDocument Register();
 DynamicJsonDocument getDeviceZones();
 void initDevice();
-int refresh(String arg);
+void refreshAll();
+void refreshZone(JsonObject zone);
+int alert(String arg);
 void setup();
 void loop();
-#line 11 "/Users/aquillin/Workspace/Personal/rpi-light-controller/devices/particle/rpi-lts-ctl/src/rpi-lts-ctl.ino"
+#line 11 "/Users/aquillin/Workspace/Personal/rpi-light-controller/devices/particle/src/rpi-lts-ctl.ino"
 String myDeviceId; // the manufacturer id for the device
 int deviceId = 0; // device id from server
 JsonObject deviceData;
@@ -198,16 +200,13 @@ DynamicJsonDocument getDeviceZones(){
 
 void initDevice() {
     Serial.println("Initializing... ");
-    Serial.flush();
     bool success = ping();
     if(success){
         Serial.println("Service is available!!");
-        Serial.flush();
         DynamicJsonDocument json = findDeviceData();
 
         if(json.isNull() || json.as<JsonArray>().size() == 0) {
             Serial.println("Device not found on server.  Attempting to register");
-            Serial.flush();
 
             json = Register();
             deviceData = json.as<JsonObject>();
@@ -221,71 +220,76 @@ void initDevice() {
     
     } else {
         Serial.println("Service is currently unavailable.");
-        Serial.flush();
     }
     
     Serial.println("Initialization complete.");
-    Serial.flush();
 }
 
-int refresh(String arg) {
-    Serial.println("Refreshing and processing zone data");
+void refreshAll() {
+    Serial.println("Refreshing and processing all zone data");
 
     DynamicJsonDocument zonesDoc = getDeviceZones();
 
     if(zonesDoc.isNull()) {
         Serial.println("Zone data not found for some reason.");
-    } else {
-        JsonArray zones = zonesDoc.as<JsonArray>();
-
-        Serial.print("Zone data found!  Total found: ");
-        Serial.println(zones.size());
-        Serial.flush();
-
-        for(JsonObject zone : zones) {
-            int zoneId = zone["zoneId"];
-            JsonArray pins = zone["pinNums"].as<JsonArray>();
-
-            DynamicJsonDocument zoneDoc = getZoneData(zoneId);
-            JsonObject zoneDetails = zoneDoc.as<JsonObject>();
-
-            const char* zoneName = zoneDetails["description"];
-            const char* state = zoneDetails["expectedState"];
-            const char* program = zoneDetails["program"];
-
-            state = strcmp(program, "off") == 0 ? program : state;
-
-            Serial.print("Processing Zone: ");
-            Serial.print(zoneName);
-            Serial.print(", Id: ");
-            Serial.print(zoneId);
-            Serial.print(", Program: ");
-            Serial.print(program);
-            Serial.print(", Expected State: ");
-            Serial.println(state);
-            Serial.flush();
-
-            for(int pin : pins) {
-                if (pin >= 0 && pin < 7) {
-                    Serial.print("Setting pin ");
-                    Serial.print(pin);
-                    Serial.print(" to ");
-                    Serial.println(state);
-
-                    pinMode(pin, OUTPUT);
-                    digitalWrite(pin, strcmp(state, "on") == 0 ? HIGH : LOW);
-                }
-                else {
-                    Serial.print("Unknown/supported pin ");
-                    Serial.print(pin);
-                    Serial.println(".  Skipping.");
-                }
-                Serial.flush();
-            }
-            Serial.flush();
-        }
-        
+        return; 
     }
+
+    JsonArray zones = zonesDoc.as<JsonArray>();
+
+    Serial.print("Zone data found!  Total found: ");
+    Serial.println(zones.size());
+
+    for(JsonObject zone : zones) {  
+        refreshZone(zone);
+    }
+}
+
+void refreshZone(JsonObject zone) {
+    int zoneId = zone["zoneId"];
+    JsonArray pins = zone["pinNums"].as<JsonArray>();
+
+    DynamicJsonDocument zoneDoc = getZoneData(zoneId);
+    JsonObject zoneDetails = zoneDoc.as<JsonObject>();
+
+    const char* zoneName = zoneDetails["description"];
+    const char* state = zoneDetails["expectedState"];
+    const char* program = zoneDetails["program"];
+
+    state = strcmp(program, "off") == 0 ? program : state;
+
+    Serial.print("Processing Zone: ");
+    Serial.print(zoneName);
+    Serial.print(", Id: ");
+    Serial.print(zoneId);
+    Serial.print(", Program: ");
+    Serial.print(program);
+    Serial.print(", Expected State: ");
+    Serial.println(state);
+
+    for(int pin : pins) {
+        if (pin >= 0 && pin < 7) {
+            Serial.print("Setting pin ");
+            Serial.print(pin);
+            Serial.print(" to ");
+            Serial.println(state);
+
+            pinMode(pin, OUTPUT);
+            digitalWrite(pin, strcmp(state, "on") == 0 ? HIGH : LOW);
+        }
+        else {
+            Serial.print("Unknown/supported pin ");
+            Serial.print(pin);
+            Serial.println(".  Skipping.");
+        }
+    }
+}
+
+int alert(String arg) {
+    Serial.print("Cloud 'alert' function triggered.  Refrshing all zones ");
+    refreshAll();
+    
+    Serial.flush();
     return 0;
 }
 
@@ -316,17 +320,16 @@ void setup() {
 
     initDevice();
 
-    Particle.function("refresh", refresh);
+    Particle.function("alert", alert);
 
     Serial.flush();
 }
 
 void loop() {
     if (deviceId > 0) {
-        refresh("all");
+        refreshAll();
     } else {
         Serial.println("Device was never initialized... trying again");
-        Serial.flush();
         initDevice();
     }
     Serial.flush();
