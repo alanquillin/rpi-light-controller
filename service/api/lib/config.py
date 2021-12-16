@@ -81,7 +81,7 @@ class Config(metaclass=ThreadSafeSingleton):
         "log_level": "",
     }
 
-    default_schema = {"db.port": "int", "logging.levels": "dict", "rpi.simulate": "bool"}
+    default_schema = {"db.port": "int", "logging.levels": "dict", "rpi.simulate": "bool", "particle.device_services.enabled": "bool"}
 
     key_aliases = {"APP_ID": ["rpi-lts-ctrl"]}
     type_conversions = {"int": to_int, "bool": to_bool, "list": to_list, "dict": to_dict}

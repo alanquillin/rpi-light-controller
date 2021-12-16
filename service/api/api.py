@@ -25,7 +25,7 @@ from werkzeug.wrappers.base_response import BaseResponse
 from lib.config import Config
 from lib import json, logging
 from lib import zones as zoneLib
-from resources.devices import Device, Devices
+from resources.devices import Device, Devices, DeviceStatus, DeviceExtendedDetails
 from resources.device_zones import DeviceZone, DeviceZones, ZoneDevice, ZoneDevices, DeviceZonePin
 from resources.zones import Zone, Zones, ZoneState
 
@@ -79,6 +79,8 @@ def health():
 # API resources:
 api.add_resource(Devices, "/devices")
 api.add_resource(Device, "/devices/<device_id>")
+api.add_resource(DeviceExtendedDetails, "/devices/<device_id>/extended_details")
+api.add_resource(DeviceStatus, "/devices/<device_id>/status")
 api.add_resource(DeviceZones, "/devices/<device_id>/zones")
 api.add_resource(DeviceZone, "/devices/<device_id>/zones/<zone_id>")
 api.add_resource(DeviceZonePin, "/devices/<device_id>/zones/<zone_id>/pins/<pin_num>")

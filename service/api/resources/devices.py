@@ -3,14 +3,33 @@ from flask import request
 from resources import BaseResource, ResourceMixinBase
 from db import session_scope
 from db.devices import Devices as DevicesDB
-
+from lib import devices as devicesLib
 
 class DeviceResourceMixin(ResourceMixinBase):
     def __init__(self):
         super().__init__()
     
-    def transform_response(self, device, **kwargs):
+    def get_status(self, device):
+        status = "unsupported"
+        if devicesLib.supports_status_check(device):
+            status = devicesLib.ping(device)
+        return status
+
+    def transform_response(self, device, include_status=False, **kwargs):
         data = device.to_dict()
+
+        data["supports_status_check"] = devicesLib.supports_status_check(device)
+        
+        include_status = request.args.get("include_status", "false").lower() in ["true", "yes", "", "1"]
+        if include_status:
+            data["status"] = self.get_status(device)
+
+        include_extended_details = request.args.get("include_extended_details", "false").lower() in ["true", "yes", "", "1"]
+        if include_extended_details:
+            extended_details = devicesLib.get_details(device)
+            if extended_details:
+                data["extended_details"] = extended_details
+
         return super().transform_response(data, **kwargs)
 
 
@@ -49,9 +68,19 @@ class Devices(BaseResource, DeviceResourceMixin):
             else: data['id'] = 1
             
             self.logger.debug("Creating device with: %s", data)
-            zone = DevicesDB.create(db_session, **data)
+            device = DevicesDB.create(db_session, **data)
 
-            return self.transform_response(zone)
+            if "description" not in data:
+                self.logger.debug("no name/description provided... attempting to retrieve int.")
+                description = devicesLib.get_description(device)
+
+                if description:
+                    self.logger.debug("Yay!  Name/description was able to be retrieved for device %s, updating DB.  value= %s", device.id, description)
+                    device = DevicesDB.update(db_session, device.id, description=description)
+                else:
+                    self.logger.debug(":( unable to retrieve name/descritpion for device %s", device.id)
+
+            return self.transform_response(device)
 
 class Device(BaseResource, DeviceResourceMixin):
     def __init__(self):
@@ -59,9 +88,9 @@ class Device(BaseResource, DeviceResourceMixin):
 
     def get(self, device_id):
         with session_scope(self.config) as db_session:
-            zone = DevicesDB.get_by_pkey(db_session, device_id)
+            device = DevicesDB.get_by_pkey(db_session, device_id)
             
-            return self.transform_response(zone)
+            return self.transform_response(device)
     
     def patch(self, device_id):
         with session_scope(self.config) as db_session:
@@ -84,3 +113,24 @@ class Device(BaseResource, DeviceResourceMixin):
             DevicesDB.delete(db_session, device_id)
 
             return
+
+class DeviceStatus(BaseResource, ResourceMixinBase):
+    def __init__(self):
+        super().__init__()
+
+    def get(self, device_id):
+        with session_scope(self.config) as db_session:
+            device = DevicesDB.get_by_pkey(db_session, device_id)
+            
+            return self.transform_response(devicesLib.ping(device))
+
+class DeviceExtendedDetails(BaseResource, ResourceMixinBase):
+    def __init__(self):
+        super().__init__()
+
+    def get(self, device_id):
+        with session_scope(self.config) as db_session:
+            device = DevicesDB.get_by_pkey(db_session, device_id)
+            
+            return self.transform_response(devicesLib.get_details(device))
+    

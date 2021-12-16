@@ -3,8 +3,10 @@ from flask import request
 from resources import BaseResource, ResourceMixinBase
 from db import session_scope
 from db.zones import Zones as ZonesDB
+from db.device_zones import DeviceZones as DeviceZonesDB
 from lib.rpi import RPi
 from lib.zones import PROGRAM_MANUAL, PROGRAM_TIMER, STATE_OFF, STATE_ON, calc_timer_state
+from lib import devices as devicesLib
 
 class ZoneResourceMixin(ResourceMixinBase):
     def __init__(self):
@@ -106,6 +108,17 @@ class ZoneState(BaseResource, ZoneResourceMixin):
             zone = ZonesDB.get_by_pkey(db_session, zone_id)
             
             self.gpio.set(zone, True if state.lower() == 'on' else False)
+
+            self.logger.debug("attempting to alert any attached devices to zone %s", zone.id)
+            dz_map = DeviceZonesDB.query(db_session, zone_id=zone.id)
+            if dz_map:
+                checked = []
+                for dz in dz_map:
+                    if dz.zone_id not in checked:
+                        self.logger.info("attepmting to alert device %s to refresh zone %s", dz.device_id, zone.id)
+                        checked.append(dz.zone_id)
+                        devicesLib.alert(dz.device)
+
             
             if zone.program == PROGRAM_MANUAL:
                 manual_state = self.transform_state(state.lower() == 'on')
