@@ -15,6 +15,8 @@ def get_env(var, default=None, con_fn=None):
         val = con_fn(val)
     return val
 
+def to_bool(val):
+    return bool(val)
 
 log_level_str = get_env("LOG_LEVEL", "INFO")
 log_level = getattr(logging, log_level_str, logging.INFO)
@@ -90,16 +92,22 @@ def get_time(t):
     return time.strptime(dt, format)
 
 if __name__ == '__main__':
+    disabled = get_env('DISABLE_MONITOR', False, to_bool)
+
+    if disabled:
+        LOG.warning("Monitor is disabled.  Shutting down")
+        shutdown()
+
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--host', help='hostname for the christma lights service')
-    parser.add_argument('--port', help='port for the christma lights service')
+    parser.add_argument('--host', help='hostname for the light controller API')
+    parser.add_argument('--port', help='port for the light controller API')
     parser.add_argument('--no-secure', help='Flag to use use HTTP instead of HTTPS', action='store_true')
-    parser.add_argument('--ssl-key', help='Flag to use use HTTP instead of HTTPS')
-    parser.add_argument('--ssl-cert', help='Flag to use use HTTP instead of HTTPS')
-    parser.add_argument('--ssl-ca', help='Flag to use use HTTP instead of HTTPS')
+    parser.add_argument('--ssl-key', help='')
+    parser.add_argument('--ssl-cert', help='')
+    parser.add_argument('--ssl-ca', help='')
     parser.add_argument('--no-loop', help='', action='store_true')
-    parser.add_argument('--debug', help='', action='store_true')
-    parser.add_argument('--interval', help='The interval in seconds to wait between zone checks')
+    parser.add_argument('--log-level', help='')
+    parser.add_argument('--interval', help='The interval in seconds to wait between zone checks.  Default is 60 sec.')
 
     args = parser.parse_args()
 
@@ -171,6 +179,7 @@ if __name__ == '__main__':
 
             time.sleep(interval)
             if args.no_loop:
+                LOG.info("no-loop param is set, exiting.")
                 break
 
     except (KeyboardInterrupt, SystemExit):
