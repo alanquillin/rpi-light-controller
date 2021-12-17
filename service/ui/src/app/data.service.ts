@@ -29,11 +29,11 @@ export class DataService {
     //   this.baseUrl = `${this.host}`;
     // } else {
     //   this.host = '';
-    //   this.baseUrl = '';
+    //   this.baseUrl = '/api/v1';
     // }
 
     this.host = '';
-    this.baseUrl = '';
+    this.baseUrl = '/api/v1';
   }
 
   getError(error: any) {
