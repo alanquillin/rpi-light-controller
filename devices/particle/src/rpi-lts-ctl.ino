@@ -15,7 +15,7 @@ String model;
 // CONSTANTS
 String MANUFACTURER = "Particle";
 int LOOP_DELAY_MS = 40000;
-String HOST = "192.168.122.9";
+String HOST = "<__IP_Address__>";
 int PORT = 80;
 
 http_header_t GET_HEADERS[] = {
