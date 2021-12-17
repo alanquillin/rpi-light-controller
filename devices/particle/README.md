@@ -1,35 +1,22 @@
-# rpi-lts-ctl
+# RPi Light Controller: Remote relays device (Particle.io)
 
-A Particle project named rpi-lts-ctl
+This application is designed to be run on any of the [Particle](https://particle.io) IoT devices (running their DeviceOS).  These devices are capable of controlling one or more 5V relays via their control pins (the number of control pins varies by the platform).  When Mapped to a zone, these devices poll the service API on a interval to check the expected state of the zone and set their control pin(s) accordingly.  The difference with these IoT devices compared to others, is the Particle cloud functionality.  The devices are capable of being trigger remotely by the RPi service when changes happen so they don't have to poll the API as frequently.
 
-## Welcome to your project!
+## Requirements
 
-Every new Particle project is composed of 3 important elements that you'll see have been created in your project directory for rpi-lts-ctl.
+- A [Particle device](https://store.particle.io).  Currently only testes with the [WiFi devices](https://store.particle.io/collections/wifi) but there is no reason that tis cannot work with the other device as long as they can connect to the RPi Service.
+- A 5V relay.
 
-#### ```/src``` folder:  
-This is the source folder that contains the firmware files for your project. It should *not* be renamed. 
-Anything that is in this folder when you compile your project will be sent to our compile service and compiled into a firmware binary for the Particle device that you have targeted.
+## Compiling and flashing a device
 
-If your application contains multiple files, they should all be included in the `src` folder. If your firmware depends on Particle libraries, those dependencies are specified in the `project.properties` file referenced below.
+To flash a device, connect the device via usb and run the following command replacing `<platform>` with the name of the device platform (i.e. photon, argon, boron, etc):
 
-#### ```.ino``` file:
-This file is the firmware that will run as the primary application on your Particle device. It contains a `setup()` and `loop()` function, and can be written in Wiring or C/C++. For more information about using the Particle firmware API to create firmware for your Particle device, refer to the [Firmware Reference](https://docs.particle.io/reference/firmware/) section of the Particle documentation.
+```shell
+make flash <platform>
+```
 
-#### ```project.properties``` file:  
-This is the file that specifies the name and version number of the libraries that your project depends on. Dependencies are added automatically to your `project.properties` file when you add a library to a project using the `particle library add` command in the CLI or add a library in the Desktop IDE.
+This will compile and flash the connected device for the default DeviceOS firmware.  If you want to target a specific firmware (for instance, if you are using an older device like the "spark core"), you can passing the in the `FIRMWARE_VERSION` flag.
 
-## Adding additional files to your project
-
-#### Projects with multiple sources
-If you would like add additional files to your application, they should be added to the `/src` folder. All files in the `/src` folder will be sent to the Particle Cloud to produce a compiled binary.
-
-#### Projects with external libraries
-If your project includes a library that has not been registered in the Particle libraries system, you should create a new folder named `/lib/<libraryname>/src` under `/<project dir>` and add the `.h`, `.cpp` & `library.properties` files for your library there. Read the [Firmware Libraries guide](https://docs.particle.io/guide/tools-and-features/libraries/) for more details on how to develop libraries. Note that all contents of the `/lib` folder and subfolders will also be sent to the Cloud for compilation.
-
-## Compiling your project
-
-When you're ready to compile your project, make sure you have the correct Particle device target selected and run `particle compile <platform>` in the CLI or click the Compile button in the Desktop IDE. The following files in your project folder will be sent to the compile service:
-
-- Everything in the `/src` folder, including your `.ino` application file
-- The `project.properties` file for your project
-- Any libraries stored under `lib/<libraryname>/src`
+```shell
+make flash -e FIRMWARE_VERSION=<Firmware version number> <platform>
+```
