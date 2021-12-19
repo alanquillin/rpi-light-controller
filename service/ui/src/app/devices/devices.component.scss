@@ -1,0 +1,42 @@
+.header {
+    text-align: left;
+}
+
+.header-content {
+    vertical-align: middle;
+    width: 100%;
+}
+
+.header-content .mat-icon {
+    padding-right: .2em;
+}
+
+.header-content a {
+    color: white;
+    text-decoration: none;
+}
+
+.add-zone {
+    border: none;
+    width: fit-content;
+    margin-top: 18px;
+}
+
+mat-form-field.add-zone-field {
+    width: 250px;
+}
+
+.add-zone-field {
+    display: block;
+    width: fit-content;
+}
+
+.add-zone-submit {
+    display: block;
+    margin-top: 4px;
+}
+
+.add-zone-submit button {
+    display: inline-flex;
+    align-items: center;
+}

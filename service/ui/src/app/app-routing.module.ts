@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AddZoneComponent } from './add-zone/add-zone.component';
+import { DevicesComponent } from './devices/devices.component'
 
 const routes: Routes = [
   {
@@ -12,6 +13,10 @@ const routes: Routes = [
   {
     path: 'add-zone',
     component: AddZoneComponent,
+  },
+  {
+    path: 'devices',
+    component: DevicesComponent
   },
 ];
 

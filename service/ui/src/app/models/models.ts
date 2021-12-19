@@ -20,6 +20,7 @@ export class Device {
   manufacturerId!: string;
   manufacturer!: string;
   model!: string;
+  supportsStatusCheck!: boolean;
 }
 
 export class ZoneDevices {
