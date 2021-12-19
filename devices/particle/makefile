@@ -1,12 +1,38 @@
+GREP = $(shell which grep)
+SED = $(shell which sed)
+PARTICLE = $(shell which particle)
+
 FIRMWARE_VERSION ?= 2.2.0
-PLATFORM_TARGETS = compile flash
-PLATFORM ?= $(filter-out $(PLATFORM_TARGETS),$(MAKECMDGOALS))
 PLATFORMS = photon p core c electron e p1 argon boron bsom
 
-SAVE_DIR ?= ./builds/$(FIRMWARE_VERSION)/$(PLATFORM)
-SAVE_PATH ?= $(SAVE_DIR)/rpi-lts-ctl.bin
+SAVE_DIR = ./builds/$(FIRMWARE_VERSION)/$(1)
+SAVE_PATH = $(call SAVE_DIR,$(1))/rpi-lts-ctl.bin
 
-.PHONY: depends config compile flash clean $(PLATFORMS)
+
+define compile
+	$(if $(wildcard $(call SAVE_DIR,$(PLATFORM))),,$(shell mkdir -p $(call SAVE_DIR,$(PLATFORM))))
+	particle compile $(1) --target $(FIRMWARE_VERSION) --saveTo $(call SAVE_PATH,$(1)) $(EXTRA_ARGS) $(EXTRA_COMPILE_ARGS) .
+endef
+
+define extract_connected_device_details
+	$(info Looking for a USB connected particle device...)
+	$(eval DEVICE_DETAILS := $(shell particle usb list))
+	
+	$(if $(findstring No devices found,$(DEVICE_DETAILS)),$(error No USB connected device found connected))
+	
+	$(if $(findstring Memory allocation error,$(DEVICE_DETAILS)),$(error There was a memory allocation error trying to retrieve the device details... try reconnecting the device.))
+	
+	$(eval $(1) := $(shell echo "$(DEVICE_DETAILS)" | $(GREP) -o '\[.*\]' | $(SED) 's/\[\(.*\)\]/\1/'))
+	$(eval PLATFORM_INFO := $(shell echo "$(DEVICE_DETAILS)" | $(GREP) -o '(.*)' | $(SED) 's/(\(.*\))/\1/' | tr A-Z a-z))
+	$(eval $(2) := $(shell echo "$(PLATFORM_INFO)" | sed 's/,.*//'))
+	$(eval $(3) := $(findstring dfu,$(PLATFORM_INFO)))
+endef
+
+define validate_platform
+	$(if $(filter $(1),$(PLATFORMS)),,$(error Invalid platform '$(1)'.  Must be one of: $(PLATFORMS)))
+endef
+
+.PHONY: depends config compile flash-local flash-cloud clean $(PLATFORMS)
 
 depends:
 	particle library copy HttpClient && \
@@ -16,31 +42,44 @@ config:
 ifneq ($(shell grep "<__IP_Address__>" "src/rpi-lts-ctl.ino"),)
 	@echo "IP Address not set.  What is the IP Address of you RPi Light Service? "; \
     read IP_ADDRESS; if [ ! -z $$IP_ADDRESS ]; then sed -i "" "s/<__IP_Address__>/$$IP_ADDRESS/g" src/rpi-lts-ctl.ino; fi
-	
 endif
 
 compile: depends config
-ifeq ("$(PLATFORM)","")
-	$(error Please provide a device platform to compile for)
+ifeq ($(PLATFORM),)
+	$(call extract_connected_device_details,DEVICE_ID,PLATFORM,DFU)
+else
+	$(call validate_platform,$(PLATFORM))
 endif
-ifeq ($(filter $(PLATFORM),$(PLATFORMS)),)
-	$(error Invalid platform '$(PLATFORM)'.  Must be one of: $(PLATFORMS))
-endif
-ifeq ("$(wildcard $(SAVE_DIR))","")
-	$(shell mkdir -p $(SAVE_DIR))
-endif
-	particle compile $(PLATFORM) --target $(FIRMWARE_VERSION) --saveTo $(SAVE_PATH) $(EXTRA_ARGS) $(EXTRA_COMPILE_ARGS) .
 
-flash: compile
-	particle flash --target $(FIRMWARE_VERSION) $(EXTRA_ARGS) $(EXTRA_FLASH_ARGS) $(DEVICE_ID) $(SAVE_PATH)
+	$(call compile,$(PLATFORM))
 
-test: 
-	echo "test" && echo "$%" && echo "$(ARGS)" && echo "$(MAKECMDGOALS)"
+flash-local: depends config
+	$(call extract_connected_device_details,DEVICE_ID,PLATFORM,DFU)
+
+	$(info Connected Device -> $(DEVICE_DETAILS))
+	$(info DEVICE_ID -> $(DEVICE_ID))
+	$(info PLATFORM -> $(PLATFORM))
+	$(info DFU -> $(DFU))
+
+	$(if $(findstring dfu,$(DFU)),,$(error Device not in DFU mode.  See https://docs.particle.io/tutorials/device-os/led/argon/#dfu-mode-device-firmware-upgrade- to learn how to put your device into DFU mode.))
+
+	$(call compile,$(PLATFORM))
+	particle flash --target $(FIRMWARE_VERSION) --usb $(EXTRA_ARGS) $(EXTRA_FLASH_ARGS) $(call SAVE_PATH,$(PLATFORM))
+
+flash-cloud: depends config
+ifeq ($(DEVICE_ID),)
+	$(call extract_connected_device_details,DEVICE_ID,PLATFORM,DFU)
+endif
+	
+	particle flash --target $(FIRMWARE_VERSION) $(EXTRA_ARGS) $(EXTRA_FLASH_ARGS) $(DEVICE_ID) .
+
+
 clean:
 	rm -rf ./builds && \
 	rm -rf ./target && \
 	rm -rf ./lib && \
-	rm src/rpi-lts-ctl.cpp
+	rm -f src/rpi-lts-ctl.cpp && \
+	sed -i "" "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/<__IP_Address__>/" src/rpi-lts-ctl.ino
 
 $(PLATFORMS):
     #EMPTY target to catch if the platform was supplies as a command line arg (i.e. `make compile argon`)
