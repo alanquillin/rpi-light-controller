@@ -80,7 +80,7 @@ http_response_t post(String path, String data){
 }
 
 DynamicJsonDocument findDeviceData(){
-    String path = "/devices?manufacturer=";
+    String path = "/api/v1/devices?manufacturer=";
     path.concat(MANUFACTURER);
     path.concat("&model=");
     path.concat(model);
@@ -101,7 +101,7 @@ DynamicJsonDocument findDeviceData(){
 }
 
 DynamicJsonDocument getZoneData(int zoneId){
-    String path = "/zones/";
+    String path = "/api/v1/zones/";
     path.concat(zoneId);
 
     DynamicJsonDocument doc(1024);
@@ -132,7 +132,7 @@ bool ping(){
 }
 
 DynamicJsonDocument Register(){
-    String path = "/devices";
+    String path = "/api/v1/devices";
 
     DynamicJsonDocument j_data(1024);
     j_data["manufacturerId"] = myDeviceId.c_str();
@@ -160,7 +160,7 @@ DynamicJsonDocument Register(){
 }
 
 DynamicJsonDocument getDeviceZones(){
-    String path = "/devices/";
+    String path = "/api/v1/devices/";
     path.concat(deviceId);
     path.concat("/zones");
 

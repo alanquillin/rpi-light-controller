@@ -32,7 +32,7 @@ define validate_platform
 	$(if $(filter $(1),$(PLATFORMS)),,$(error Invalid platform '$(1)'.  Must be one of: $(PLATFORMS)))
 endef
 
-.PHONY: depends config compile flash-local flash-cloud clean $(PLATFORMS)
+.PHONY: config depends compile flash-local flash-cloud clean $(PLATFORMS)
 
 depends:
 	particle library copy HttpClient && \
@@ -44,7 +44,7 @@ ifneq ($(shell grep "<__IP_Address__>" "src/rpi-lts-ctl.ino"),)
     read IP_ADDRESS; if [ ! -z $$IP_ADDRESS ]; then sed -i "" "s/<__IP_Address__>/$$IP_ADDRESS/g" src/rpi-lts-ctl.ino; fi
 endif
 
-compile: depends config
+compile: config depends
 ifeq ($(PLATFORM),)
 	$(call extract_connected_device_details,DEVICE_ID,PLATFORM,DFU)
 else
@@ -53,7 +53,7 @@ endif
 
 	$(call compile,$(PLATFORM))
 
-flash-local: depends config
+flash-local: config depends
 	$(call extract_connected_device_details,DEVICE_ID,PLATFORM,DFU)
 
 	$(info Connected Device -> $(DEVICE_DETAILS))
@@ -66,7 +66,7 @@ flash-local: depends config
 	$(call compile,$(PLATFORM))
 	particle flash --target $(FIRMWARE_VERSION) --usb $(EXTRA_ARGS) $(EXTRA_FLASH_ARGS) $(call SAVE_PATH,$(PLATFORM))
 
-flash-cloud: depends config
+flash-cloud: config depends
 ifeq ($(DEVICE_ID),)
 	$(call extract_connected_device_details,DEVICE_ID,PLATFORM,DFU)
 endif
