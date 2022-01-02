@@ -26,6 +26,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; 
 
 @NgModule({
   declarations: [
@@ -53,7 +55,9 @@ import { MatButtonModule } from '@angular/material/button';
     MatListModule,
     MatChipsModule,
     MatTooltipModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTableModule,
+    MatProgressSpinnerModule
   ],
   providers: [HttpClient],
   bootstrap: [AppComponent]

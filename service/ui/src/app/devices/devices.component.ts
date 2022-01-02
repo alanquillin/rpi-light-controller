@@ -12,14 +12,27 @@ import { Device } from './../models/models';
 export class DevicesComponent {
   title = 'Manage Devices';
 
+  displayedColumns: string[] = ['description', 'manufacturer', 'model', 'manufacturerId', 'actions'];
+  isLoading = false;
+
   constructor(private dataService: DataService, private router: Router) {}
 
   devices: Device[] = [];
 
-  ngOnInit() {
+  refresh() {
+    this.isLoading = true;
     this.dataService.getDevices().subscribe((devices: Device[]) => {
       this.devices = devices;
+      this.isLoading = false;
     });
+  }
+
+  ngOnInit() {
+    this.refresh();    
+  }
+
+  deleteDevice(id: number) {
+    return;
   }
 }
 

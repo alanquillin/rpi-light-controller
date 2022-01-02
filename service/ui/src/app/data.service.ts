@@ -89,7 +89,7 @@ export class DataService {
     return this.http.post<Zone>(url, zone).pipe(catchError(this.getError));
   }
 
-  getDevices(): Observable<Device[]> {
+  getDevices(includeStatus: boolean = false): Observable<Device[]> {
     const url = `${this.baseUrl}/devices`;
     return this.http.get<Device[]>(url).pipe(catchError(this.getError));
   }
