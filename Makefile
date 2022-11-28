@@ -25,7 +25,7 @@ DOCKER_IMAGE_MONITOR ?= $(DOCKER_IMAGE_BASE)-monitor
 DOCKER_DB_SEED_IMAGE ?= $(DOCKER_IMAGE_BASE)-db-seed
 DOCKER_IMAGE_TAG ?= latest
 DOCKER_IMAGE_TAG_DEV ?= dev
-DOCKER_SOURCE_IMAGE_TAG ?= latest
+DOCKER_SOURCE_IMAGE_TAG ?= $(DOCKER_IMAGE_TAG)
 DOCKER := docker
 DOCKER_BUILD := $(DOCKER) build $(DOCKER_BUILD_ARGS)
 IMAGE_REPOSITORY := alanquillin
@@ -63,7 +63,7 @@ update-depends:
 
 # prod
 
-build: build-service build-monitor
+build: update-depends build-service build-monitor
 
 build-service:
 	$(DOCKER_BUILD) --platform=linux/arm -t $(DOCKER_IMAGE_SERVICE):$(DOCKER_IMAGE_TAG) service
@@ -73,7 +73,7 @@ build-monitor:
 
 # dev
 
-build-dev: build-service-dev build-monitor-dev build-db-seed
+build-dev: update-depends build-service-dev build-monitor-dev build-db-seed
 
 build-service-dev:
 	$(DOCKER_BUILD) --build-arg build_for=dev -t $(DOCKER_IMAGE_SERVICE):$(DOCKER_IMAGE_TAG_DEV) service

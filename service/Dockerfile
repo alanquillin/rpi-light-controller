@@ -6,11 +6,10 @@ RUN yarn global add @angular/cli
 COPY ui/angular.json ui/tsconfig.app.json ui/tsconfig.json ui/package.json /ui/
 WORKDIR /ui
 RUN yarn install --non-interactive
-COPY ui/src /ui/src
 
 # Python base
 # ############################################################
-FROM python:3.8-slim-buster as python-base
+FROM python:3.9-slim-buster as python-base
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc build-essential libpq-dev libffi-dev libssl-dev \
@@ -20,11 +19,11 @@ RUN pip install -U pip
 RUN pip install setuptools wheel
 ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
 RUN pip install "cryptography<3.5"
-RUN pip install "poetry>=1.1.11"
+RUN pip install "poetry>=1.2.2"
 
 RUN poetry config virtualenvs.in-project true
 COPY pyproject.toml poetry.lock ./
-RUN poetry install --no-interaction --no-ansi --no-dev --no-root
+RUN poetry install --no-interaction --no-ansi --only main --no-root
 RUN poetry run pip install psycopg2-binary rpi.gpio
 
 RUN apt-get purge -y --auto-remove gcc build-essential libffi-dev libssl-dev
@@ -34,6 +33,7 @@ RUN apt-get purge -y --auto-remove gcc build-essential libffi-dev libssl-dev
 FROM node-base as node-build
 
 ARG build_for=prod
+COPY ui/src /ui/src
 RUN yarn run build:${build_for}
 
 # Final build

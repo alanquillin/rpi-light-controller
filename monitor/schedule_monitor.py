@@ -42,21 +42,22 @@ use_ssl = False
 ssl_key = ''
 ssl_cert = ''
 ssl_ca = ''
+api_prefix = '/api/v1'
 
 def shutdown(*args, **kwargs):
     sys.exit(0)
 
 
 def get_zones():
-    return get('/zones').json()
+    return get(f"{api_prefix}/zones").json()
 
 
 def turn_zone_on(zone_num):
-    post(f"/zones/{zone_num}/on")
+    post(f"{api_prefix}/zones/{zone_num}/on")
 
 
 def turn_zone_off(zone_num):
-    post(f"/zones/{zone_num}/off")
+    post(f"{api_prefix}/zones/{zone_num}/off")
 
 
 def ping():
@@ -149,12 +150,21 @@ if __name__ == '__main__':
     LOG.info('Log Level: %s' % log_level_str)
 
     zone_states = {}
+    last_conn_failed=False
+    init_conn_att=False
     try:
         while True:
             if not ping():
                 LOG.warning("Unable to communicate with the back end service... waiting and will try again.")
+                init_conn_att=True
+                last_conn_failed=True
                 time.sleep(10)
                 continue
+            
+            if last_conn_failed or not init_conn_att:
+                LOG.info("Communication to backend service (re)established")
+                last_conn_failed=False
+            init_conn_att=True
 
             zones = get_zones()
 

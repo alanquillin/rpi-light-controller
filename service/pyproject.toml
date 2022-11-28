@@ -44,24 +44,26 @@ addopts = "--cov api --cov-report term-missing --cov-fail-under 80 --log-level D
 
 [tool.poetry]
 name = "rpi-lights-controller"
-version = "0.1.0"
+version = "0.1.2"
 authors = ["Alan Quillin"]
 description = "A simple zoned light controller for RaspberryPi"
 
 [tool.poetry.dependencies]
+MarkupSafe = "2.0.1"
+cryptography = "3.4.8"
 Flask = "^1.1.2"
 Flask-RESTful = "^0.3.8"
+flask-cors = "^3.0.8"
 PyJWT = "^1.7.1"
 SQLAlchemy-Utils = "^0.37.5"
 Werkzeug = "^1.0.1"
 alembic = "^1.6.5"
-flask-cors = "^3.0.8"
 dnspython = "^2.0.0"
-gevent = "^20.6.2"
+gevent = "^21.12.0"
 nanoid = "^2.0.0"
 psycopg2 = "^2.9.2"
 psycogreen = "^1.0.2"
-python = "^3.8"
+python = "^3.9"
 python-dateutil = "^2.8.0"
 requests = "^2.24.0"
 schema = "^0.7.3"
@@ -69,7 +71,6 @@ simplejson = "^3.17.2"
 six = "^1.15.0"
 sqlalchemy = "^1.4.17"
 urllib3 = "^1.25.10"
-wheel = "^0.35.1"
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.6.2"
