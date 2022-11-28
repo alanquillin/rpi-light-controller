@@ -41,6 +41,16 @@ export class DashboardComponent {
     return this.addDeviceMappingFormGroup.controls;
   }
 
+  ngOnInit() {
+    this.loading = true;
+    this.refreshZones(() => {
+      this.refreshDevices(() => {
+        this.loading = false;
+        this.addDeviceMappingFormGroup.reset();
+      });
+    });
+  }
+
   displayError(errMsg: string) {
     this._snackBar.open("Error: " + errMsg, "Close");
   }
@@ -77,7 +87,7 @@ export class DashboardComponent {
       if (zones) {
         this.zones = zones;
         if(zones.length === 1){
-          this.setSelectZone(zones[0]);
+          this.selectZone(zones[0].id);
         }
       }
       if (next) {
@@ -146,16 +156,6 @@ export class DashboardComponent {
       }
     })
   } 
-
-  ngOnInit() {
-    this.loading = true;
-    this.refreshZones(() => {
-      this.refreshDevices(() => {
-        this.loading = false;
-        this.addDeviceMappingFormGroup.reset();
-      });
-    });
-  }
 
   programChange(item: { value: string; }) {
     console.log("Selected value: " + item.value);
