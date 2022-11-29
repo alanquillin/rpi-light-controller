@@ -29,12 +29,19 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; 
 
+//import { FooterComponent } from './_components/footer/footer.component';
+import { HeaderComponent } from './_components/header/header.component';
+
+import { WINDOW_PROVIDERS } from './window.provider';
+
 @NgModule({
   declarations: [
     AppComponent,
     AddZoneComponent,
     DashboardComponent,
-    DevicesComponent
+    DevicesComponent,
+    //FooterComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
@@ -59,7 +66,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatTableModule,
     MatProgressSpinnerModule
   ],
-  providers: [HttpClient],
+  providers: [HttpClient, WINDOW_PROVIDERS],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

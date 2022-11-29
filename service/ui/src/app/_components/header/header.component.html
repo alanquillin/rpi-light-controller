@@ -1,0 +1,23 @@
+<div class="header-content">
+    <div class="header-title">
+        <a class="title" href="/">RPI Light Controller</a>
+    </div>
+    <div class="header-nav">
+        <span tabindex="-1">
+            <button id="nav_toggle_user_menu"
+                mat-mini-fab
+                [matMenuTriggerFor]="navMenu">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <mat-menu #navMenu="matMenu" xPosition="before" class="override">
+                <button mat-menu-item id="nav_dashboard" (click)="goto('')"><mat-icon>home</mat-icon>Home</button>
+                <button mat-menu-item id="nav_dashboard" (click)="goto('add-zone')"><mat-icon>add</mat-icon>Add Zone</button>
+                <button mat-menu-item id="nav_dashboard" (click)="goto('devices')"><mat-icon>devices</mat-icon>Manage Devices</button>
+            </mat-menu>
+
+            <mat-menu #toolsOptions="matMenu">
+                <button mat-menu-item id="nav_tools_volume_calculator" (click)="goto('tools/volume_calculator')"><mat-icon>calculate</mat-icon>Volume Calculator</button>
+            </mat-menu>
+        </span>
+    </div>
+</div>

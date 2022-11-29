@@ -3,7 +3,20 @@
 // this check reports that some of these types shadow their own definitions
 /* eslint-disable no-shadow */
 
-export class Zone {
+import { isNilOrEmpty } from '../utils/helpers'
+
+export class Base {
+  constructor(from?: any) {
+    if(!isNilOrEmpty(from)) {
+      this.from(from);
+    }
+  }
+
+  from(from: any) {
+    Object.assign(this, from);
+  }
+}
+export class Zone extends Base {
   id!: number;
   description!: string;
   program!: string;
@@ -14,7 +27,7 @@ export class Zone {
   off: string | undefined;
 }
 
-export class Device {
+export class Device extends Base {
   id!: number;
   description: string | undefined;
   manufacturerId!: string;
@@ -24,17 +37,17 @@ export class Device {
   status!: string;
 }
 
-export class ZoneDevices {
+export class ZoneDevices extends Base {
   deviceId!: number;
   pinNums!: number[];
 }
 
-export class DeviceZones {
+export class DeviceZones extends Base {
   zoneId!: number;
   pinNums!: number[];
 }
 
-export class DeviceToZoneMap {
+export class DeviceToZoneMap extends Base {
   zoneId!: number;
   deviceId!: number;
   pinNum!: number;

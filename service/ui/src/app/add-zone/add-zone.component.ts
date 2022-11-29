@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DataService } from './../data.service';
+import { DataService } from '../_services/data.service';
 import { Router } from '@angular/router';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 

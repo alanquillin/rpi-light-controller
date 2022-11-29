@@ -1,7 +1,7 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { Component } from '@angular/core';
-import { DataService } from './../data.service';
+import { DataService } from '../_services/data.service';
 import { Device, Zone, ZoneDevices, DeviceToZoneMap } from './../models/models';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 
