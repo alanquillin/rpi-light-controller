@@ -99,6 +99,16 @@ export class DataService {
     return this.http.get<Device>(url).pipe(catchError(this.getError));
   }
 
+  createDevice(data: any): Observable<any> {
+    const url = `${this.baseUrl}/devices`;
+    return this.http.post<any>(url, data).pipe(catchError(this.getError));
+  }
+
+  updateDevice(deviceId: number, data: any): Observable<any> {
+    const url = `${this.baseUrl}/devices/${deviceId}`;
+    return this.http.patch<any>(url, data).pipe(catchError(this.getError));
+  }
+
   deleteDevice(deviceId: number): Observable<any> {
     const url = `${this.baseUrl}/devices/${deviceId}`;
     return this.http.delete<any>(url).pipe(catchError(this.getError));

@@ -115,7 +115,7 @@ class ZoneState(BaseResource, ZoneResourceMixin):
                 checked = []
                 for dz in dz_map:
                     if dz.zone_id not in checked:
-                        self.logger.info("attepmting to alert device %s to refresh zone %s", dz.device_id, zone.id)
+                        self.logger.info("attempting to alert device %s to refresh zone %s", dz.device_id, zone.id)
                         checked.append(dz.zone_id)
                         devicesLib.alert(dz.device)
 
